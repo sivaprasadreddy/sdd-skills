@@ -74,7 +74,7 @@ I've analysed the project. Before I write docs/project.md, I need a few details:
 2. **Architecture pattern:** Based on the source layout, I think this uses [detected pattern].
    Is that right, or would you describe it differently?
 
-3. **Key conventions:** Are there any conventions Claude should follow that aren't obvious from the code?
+3. **Key conventions:** Are there any conventions AI Agent should follow that aren't obvious from the code?
    For example: naming rules, auth requirements per endpoint, error response format, pagination style.
 
 4. **Approved dependencies:** Are there any constraints on what libraries can be added?

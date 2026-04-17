@@ -10,7 +10,7 @@ This prevents the common failure mode of AI-assisted development: jumping straig
 
 ## Prerequisites
 
-- [Claude Code](https://claude.ai/code) installed and running in your project
+- [Claude Code](https://claude.ai/code) or [Codex](https://openai.com/codex/) installed and running in your project
 - A `docs/project.md` file at the root of your project describing your tech stack, architecture, and conventions (the skills read this file to tailor their output — the richer it is, the better the results)
 
 > **New project?** Run `/sdd-init` after installation — it analyses your codebase and generates `docs/project.md` for you.
@@ -22,11 +22,11 @@ npx skills add https://github.com/sivaprasadreddy/sdd-skills
 ```
 
 ### Verify installation
-Start Claude Code in your project and run:
+Start your AI Agent in your project and run:
 ```
 /sdd-init
 ```
-If Claude begins analysing your project structure, the skills are installed correctly.
+If AI Agent begins analysing your project structure, the skills are installed correctly.
 
 ---
 
@@ -55,7 +55,7 @@ Here is a complete end-to-end example of adding JWT authentication to a Spring B
 /sdd-init
 ```
 
-Claude scans your build files and source tree, asks for your project name, mission, and any conventions it couldn't detect, then writes `docs/project.md`. Review it and correct anything that looks wrong.
+AI Agent scans your build files and source tree, asks for your project name, mission, and any conventions it couldn't detect, then writes `docs/project.md`. Review it and correct anything that looks wrong.
 
 ---
 
@@ -65,7 +65,7 @@ Claude scans your build files and source tree, asks for your project name, missi
 /sdd-analyse Add JWT-based authentication with refresh token support
 ```
 
-Claude reads `docs/project.md`, asks up to 5 clarifying questions (token expiry times, refresh strategy, endpoints to protect, etc.), then writes `feature.md` with structured user stories, functional requirements (FR-01, FR-02, …), acceptance criteria (AC-01, AC-02, …), and out-of-scope boundaries. Review the spec before continuing.
+AI Agent reads `docs/project.md`, asks up to 5 clarifying questions (token expiry times, refresh strategy, endpoints to protect, etc.), then writes `feature.md` with structured user stories, functional requirements (FR-01, FR-02, …), acceptance criteria (AC-01, AC-02, …), and out-of-scope boundaries. Review the spec before continuing.
 
 ---
 
@@ -75,7 +75,7 @@ Claude reads `docs/project.md`, asks up to 5 clarifying questions (token expiry 
 /sdd-refine Add rate limiting — max 5 failed login attempts per minute
 ```
 
-Claude shows a diff of the proposed changes to `feature.md` and asks for confirmation before applying them. If `plan.md` already exists it tells you which steps are now stale. Repeat as many times as needed before planning.
+AI Agent shows a diff of the proposed changes to `feature.md` and asks for confirmation before applying them. If `plan.md` already exists it tells you which steps are now stale. Repeat as many times as needed before planning.
 
 ---
 
@@ -85,7 +85,7 @@ Claude shows a diff of the proposed changes to `feature.md` and asks for confirm
 /sdd-plan
 ```
 
-Claude reads `feature.md` and `docs/project.md`, identifies your exact stack and architecture pattern, then writes `plan.md` as ordered implementation steps (migration → domain → service → controller → tests), each with specific file paths and checklist items. It also maps every AC to the test method that will verify it. Approve the plan before implementing.
+AI Agent reads `feature.md` and `docs/project.md`, identifies your exact stack and architecture pattern, then writes `plan.md` as ordered implementation steps (migration → domain → service → controller → tests), each with specific file paths and checklist items. It also maps every AC to the test method that will verify it. Approve the plan before implementing.
 
 ---
 
@@ -95,7 +95,7 @@ Claude reads `feature.md` and `docs/project.md`, identifies your exact stack and
 /sdd-implement
 ```
 
-Claude works through `plan.md` step by step, reads existing code first to match your conventions, compiles after each layer, runs tests after writing them, and fixes any failures before moving on. It will not introduce new dependencies without flagging them to you. When done it reports pass/fail for every AC.
+AI Agent works through `plan.md` step by step, reads existing code first to match your conventions, compiles after each layer, runs tests after writing them, and fixes any failures before moving on. It will not introduce new dependencies without flagging them to you. When done it reports pass/fail for every AC.
 
 ---
 
@@ -105,7 +105,7 @@ Claude works through `plan.md` step by step, reads existing code first to match 
 /sdd-review
 ```
 
-Claude reviews all files changed in this branch across 8 dimensions (AC coverage, Java/Spring best practices, security, duplication, design, performance, test quality, observability). Every finding cites the exact file and line range with a severity level. The review ends with an explicit merge verdict. You can ask Claude to fix Critical and Major findings immediately.
+AI Agent reviews all files changed in this branch across 8 dimensions (AC coverage, Java/Spring best practices, security, duplication, design, performance, test quality, observability). Every finding cites the exact file and line range with a severity level. The review ends with an explicit merge verdict. You can ask AI Agent to fix Critical and Major findings immediately.
 
 ---
 
@@ -116,7 +116,7 @@ Claude reviews all files changed in this branch across 8 dimensions (AC coverage
 /sdd-archive jwt-authentication (explicit feature name)
 ```
 
-Claude verifies all AC checkboxes are ticked, moves `feature.md` and `plan.md` into `docs/specs-archive/jwt-authentication/`, and creates a brief `README.md` there summarising what was built and any notable decisions. Commit the archive directory — it is your project's institutional memory.
+AI Agent verifies all AC checkboxes are ticked, moves `feature.md` and `plan.md` into `docs/specs-archive/jwt-authentication/`, and creates a brief `README.md` there summarising what was built and any notable decisions. Commit the archive directory — it is your project's institutional memory.
 
 ---
 
@@ -344,6 +344,7 @@ your-project/
 │       └── sdd-archive/
 │           └── SKILL.md
 ├── CLAUDE.md                       ← always-on context for Claude (see below)
+├── AGENTS.md                       ← always-on context for AI Agents(Codex, Gemini, etc)
 ├── feature.md                      ← active feature spec (exists during development only)
 ├── plan.md                         ← active implementation plan (exists during development only)
 └── src/
@@ -352,9 +353,9 @@ your-project/
 
 ---
 
-## Recommended CLAUDE.md
+## Recommended CLAUDE.md or AGENTS.md
 
-Create a `CLAUDE.md` at your project root. Claude Code loads this automatically at the start of every session:
+Create a `CLAUDE.md`/`AGENTS.md` at your project root. AI Agent loads this automatically at the start of every session:
 
 ```markdown
 # Project Context
@@ -406,7 +407,7 @@ The skills rely heavily on this file. Include at minimum:
 - REST base path: /api/v1
 - Error handling: GlobalExceptionHandler via @RestControllerAdvice
 - All endpoints require authentication unless annotated @Public
-- <Any other conventions Claude should follow>
+- <Any other conventions AI Agent should follow>
 
 ## Approved Dependencies
 <List libraries already approved for use. Anything outside this list requires a flag.>
@@ -416,7 +417,7 @@ The skills rely heavily on this file. Include at minimum:
 
 ## Tips
 
-**Start every session with context.** If you are picking up work mid-feature, tell Claude: *"I'm continuing work on the JWT authentication feature. `feature.md` and `plan.md` are in the root."* Claude Code does not retain memory between sessions.
+**Start every session with context.** If you are picking up work mid-feature, tell AI Agent: *"I'm continuing work on the JWT authentication feature. `feature.md` and `plan.md` are in the root."* AI Agent does not retain memory between sessions.
 
 **Refine before you plan.** If you think of new requirements after running `/sdd-analyse` but before `/sdd-plan`, use `/sdd-refine` — it is cheaper to update a spec than to re-plan or re-implement.
 

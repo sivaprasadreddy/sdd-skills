@@ -23,7 +23,7 @@
 - REST base path: /api/v1
 - Error handling: GlobalExceptionHandler via @RestControllerAdvice
 - All endpoints require authentication unless annotated @Public
-- <Any other conventions Claude should follow>
+- <Any other conventions AI Agent should follow>
 
 ## Approved Dependencies
 <List libraries already approved for use. Anything outside this list requires a flag>
