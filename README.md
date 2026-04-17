@@ -45,6 +45,81 @@ At any point you can inspect or manually edit these files before continuing.
 
 ---
 
+## How to use?
+
+Here is a complete end-to-end example of adding JWT authentication to a Spring Boot project.
+
+### Step 1 — Initialise project context (once per project)
+
+```
+/sdd-init
+```
+
+Claude scans your build files and source tree, asks for your project name, mission, and any conventions it couldn't detect, then writes `docs/project.md`. Review it and correct anything that looks wrong.
+
+---
+
+### Step 2 — Analyse the feature
+
+```
+/sdd-analyse Add JWT-based authentication with refresh token support
+```
+
+Claude reads `docs/project.md`, asks up to 5 clarifying questions (token expiry times, refresh strategy, endpoints to protect, etc.), then writes `feature.md` with structured user stories, functional requirements (FR-01, FR-02, …), acceptance criteria (AC-01, AC-02, …), and out-of-scope boundaries. Review the spec before continuing.
+
+---
+
+### Step 3 — Refine if needed _(optional, repeatable)_
+
+```
+/sdd-refine Add rate limiting — max 5 failed login attempts per minute
+```
+
+Claude shows a diff of the proposed changes to `feature.md` and asks for confirmation before applying them. If `plan.md` already exists it tells you which steps are now stale. Repeat as many times as needed before planning.
+
+---
+
+### Step 4 — Plan the implementation
+
+```
+/sdd-plan
+```
+
+Claude reads `feature.md` and `docs/project.md`, identifies your exact stack and architecture pattern, then writes `plan.md` as ordered implementation steps (migration → domain → service → controller → tests), each with specific file paths and checklist items. It also maps every AC to the test method that will verify it. Approve the plan before implementing.
+
+---
+
+### Step 5 — Implement
+
+```
+/sdd-implement
+```
+
+Claude works through `plan.md` step by step, reads existing code first to match your conventions, compiles after each layer, runs tests after writing them, and fixes any failures before moving on. It will not introduce new dependencies without flagging them to you. When done it reports pass/fail for every AC.
+
+---
+
+### Step 6 — Review
+
+```
+/sdd-review
+```
+
+Claude reviews all files changed in this branch across 8 dimensions (AC coverage, Java/Spring best practices, security, duplication, design, performance, test quality, observability). Every finding cites the exact file and line range with a severity level. The review ends with an explicit merge verdict. You can ask Claude to fix Critical and Major findings immediately.
+
+---
+
+### Step 7 — Archive
+
+```
+/sdd-archive 
+/sdd-archive jwt-authentication (explicit feature name)
+```
+
+Claude verifies all AC checkboxes are ticked, moves `feature.md` and `plan.md` into `docs/specs-archive/jwt-authentication/`, and creates a brief `README.md` there summarising what was built and any notable decisions. Commit the archive directory — it is your project's institutional memory.
+
+---
+
 ## Skills Reference
 
 ### `/sdd-init` — Project Initialisation
