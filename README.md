@@ -16,7 +16,7 @@ This prevents the common failure mode of AI-assisted development: jumping straig
 ## Installation
 
 ```bash
-npx skills add https://github.com/sivaprasadreddy/sdd
+npx skills add https://github.com/sivaprasadreddy/sdd-skills
 ```
 
 ### Verify installation
