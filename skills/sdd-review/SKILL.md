@@ -1,7 +1,7 @@
 ---
 name: sdd-review
 description: >
-  SDD code review step. Reviews the implemented feature code against language and
+  SDD step 6. Reviews the implemented feature code against language and
   framework best practices, checks for code duplication, security vulnerabilities,
   performance issues, test coverage, and alignment with feature.md acceptance criteria.
   Use after /sdd-implement or on any existing feature implementation.
@@ -178,10 +178,10 @@ Produce the review as follows:
 <findings or "None">
 
 ## Acceptance Criteria Coverage
-| AC | Test | Status |
-|----|------|--------|
-| AC-01: ... | `FooTest#test_...` | ✅ Covered |
-| AC-02: ... | — | ❌ No test found |
+| AC         | Test               | Status          |
+|------------|--------------------|-----------------|
+| AC-01: ... | `FooTest#test_...` | ✅ Covered       |
+| AC-02: ... | —                  | ❌ No test found |
 
 ## Verdict
 - [ ] ✅ Ready to merge

@@ -1,7 +1,7 @@
 ---
 name: sdd-analyse
 description: >
-  SDD step 1. Analyse a feature request and produce a detailed feature.md spec.
+  SDD step 2. Analyse a feature request and produce a detailed feature.md spec.
   Use when the user describes a new feature they want to build.
   Asks for missing details before writing the spec.
 argument-hint: <feature description or title>

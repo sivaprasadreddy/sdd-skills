@@ -1,7 +1,7 @@
 ---
 name: sdd-plan
 description: >
-  SDD step 2. Read feature.md and produce a detailed implementation plan.md
+  SDD step 4. Read feature.md and produce a detailed implementation plan.md
   tailored to the project's tech stack and architecture.
   Use after /sdd-analyse has produced feature.md.
 ---

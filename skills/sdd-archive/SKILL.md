@@ -1,7 +1,7 @@
 ---
 name: sdd-archive
 description: >
-  SDD step 4. Archive feature.md and plan.md into docs/specs-archive/<feature-name>/ directory.
+  SDD step 7. Archive feature.md and plan.md into docs/specs-archive/<feature-name>/ directory.
   Use after /sdd-review is complete and the feature is ready to merge.
 argument-hint: <feature-name> (optional, derived from feature.md if omitted)
 ---

@@ -13,6 +13,8 @@ This prevents the common failure mode of AI-assisted development: jumping straig
 - [Claude Code](https://claude.ai/code) installed and running in your project
 - A `docs/project.md` file at the root of your project describing your tech stack, architecture, and conventions (the skills read this file to tailor their output — the richer it is, the better the results)
 
+> **New project?** Run `/sdd-init` after installation — it analyses your codebase and generates `docs/project.md` for you.
+
 ## Installation
 
 ```bash
@@ -22,19 +24,21 @@ npx skills add https://github.com/sivaprasadreddy/sdd-skills
 ### Verify installation
 Start Claude Code in your project and run:
 ```
-/sdd-analyse
+/sdd-init
 ```
-If Claude responds asking for a feature description, the skills are installed correctly.
+If Claude begins analysing your project structure, the skills are installed correctly.
 
 ---
 
 ## The Workflow
 
 ```
-/sdd-analyse  →  /sdd-refine*  →  /sdd-plan  →  /sdd-implement  →  /sdd-review  →  /sdd-archive
-                 (optional,
-                 repeatable)
+/sdd-init  →  /sdd-analyse  →  /sdd-refine*  →  /sdd-plan  →  /sdd-implement  →  /sdd-review  →  /sdd-archive
+(once)                          (optional,
+                                repeatable)
 ```
+
+![sdd-workflow.png](sdd-workflow.png)
 
 Each skill picks up where the previous one left off using the files produced along the way (`feature.md`, `plan.md`). 
 At any point you can inspect or manually edit these files before continuing.
@@ -42,6 +46,29 @@ At any point you can inspect or manually edit these files before continuing.
 ---
 
 ## Skills Reference
+
+### `/sdd-init` — Project Initialisation
+
+**Purpose:** Analyses the project codebase and generates `docs/project.md` — the context file that all other SDD skills depend on. Run once when setting up SDD in a new project.
+
+**Usage:**
+```
+/sdd-init
+```
+
+**What it does:**
+1. Checks whether `docs/project.md` already exists — if so, asks for confirmation before overwriting
+2. Scans build files (`pom.xml`, `build.gradle`, `package.json`, `docker-compose.yml`, etc.) to auto-detect language, framework, build tool, database, ORM, migration tool, messaging, and testing libraries
+3. Explores the source tree to infer the architecture pattern (Layered, Hexagonal, Modular Monolith, etc.) and package conventions
+4. Asks the user for information that cannot be detected: project mission, any conventions not visible in the code, and approved-dependency constraints
+5. Writes `docs/project.md` with all fields populated — no placeholder text left behind
+6. Confirms what was auto-detected vs. what the user provided, and prompts a review before starting feature work
+
+**Input:** None
+**Output:** `docs/project.md`
+**Requires:** Nothing — this is the starting point
+
+---
 
 ### `/sdd-analyse` — Feature Analysis
 
@@ -220,13 +247,15 @@ After running the full workflow for a feature, your project will look like this:
 your-project/
 ├── docs/
 │   ├── project.md                  ← always-on project context (you maintain this)
-│   └── specs-archive/         ← archived after /sdd-archive
-│       └── jwt-authentication/         ← archived after /sdd-archive
+│   └── specs-archive/              ← archived after /sdd-archive
+│       └── jwt-authentication/     ← archived after /sdd-archive
 │           ├── feature.md
 │           ├── plan.md
 │           └── README.md
 ├── .claude/
 │   └── skills/
+│       ├── sdd-init/
+│       │   └── SKILL.md
 │       ├── sdd-analyse/
 │       │   └── SKILL.md
 │       ├── sdd-plan/
@@ -259,12 +288,13 @@ Read `docs/project.md` for mission, tech stack, and architecture before making a
 
 ## SDD Workflow
 This project uses Spec Driven Development. The workflow is:
-1. `/sdd-analyse <feature description>` → produces `feature.md`
-2. `/sdd-refine <change>` → updates `feature.md` (optional, repeatable)
-3. `/sdd-plan` → reads `feature.md`, produces `plan.md`
-4. `/sdd-implement` → reads `plan.md`, implements and verifies
-5. `/sdd-review` → reviews code quality, security, and AC coverage
-6. `/sdd-archive` → archives `feature.md` + `plan.md` to `docs/specs-archive/<feature-name>/`
+1. `/sdd-init` → analyses codebase and produces `docs/project.md` (run once per project)
+2. `/sdd-analyse <feature description>` → produces `feature.md`
+3. `/sdd-refine <change>` → updates `feature.md` (optional, repeatable)
+4. `/sdd-plan` → reads `feature.md`, produces `plan.md`
+5. `/sdd-implement` → reads `plan.md`, implements and verifies
+6. `/sdd-review` → reviews code quality, security, and AC coverage
+7. `/sdd-archive` → archives `feature.md` + `plan.md` to `docs/specs-archive/<feature-name>/`
 
 Never skip steps. Always read `docs/project.md` before planning or implementing.
 ```

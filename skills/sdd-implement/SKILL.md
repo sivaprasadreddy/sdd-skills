@@ -1,7 +1,7 @@
 ---
 name: sdd-implement
 description: >
-  SDD step 3. Read plan.md and implement the feature step by step,
+  SDD step 5. Read plan.md and implement the feature step by step,
   then verify all acceptance criteria are met.
   Use after /sdd-plan has produced plan.md.
 ---

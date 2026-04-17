@@ -11,13 +11,14 @@ The skills live in `skills/<skill-name>/SKILL.md`. Each SKILL.md is a markdown p
 ## SDD Workflow
 
 ```
-/sdd-analyse  →  /sdd-refine*  →  /sdd-plan  →  /sdd-implement  →  /sdd-review  →  /sdd-archive
-                 (optional,
-                  repeatable)
+/sdd-init  →  /sdd-analyse  →  /sdd-refine*  →  /sdd-plan  →  /sdd-implement  →  /sdd-review  →  /sdd-archive
+(once)                          (optional,
+                                 repeatable)
 ```
 
 | Skill            | Reads                                      | Produces                     |
 |------------------|--------------------------------------------|------------------------------|
+| `/sdd-init`      | Project codebase                           | `docs/project.md`            |
 | `/sdd-analyse`   | `docs/project.md`                          | `feature.md`                 |
 | `/sdd-refine`    | `feature.md`, `docs/project.md`, `plan.md` | Updated `feature.md`         |
 | `/sdd-plan`      | `feature.md`, `docs/project.md`            | `plan.md`                    |
@@ -46,7 +47,7 @@ argument-hint: <argument description>  # omit if skill takes no arguments
 
 The body is a markdown prompt. Use `$ARGUMENTS` anywhere the user's argument should be interpolated.
 
-## Installation (for consuming projects)
+## Installation
 
 ```bash
 npx skills add https://github.com/sivaprasadreddy/sdd-skills
