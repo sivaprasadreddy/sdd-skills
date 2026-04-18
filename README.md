@@ -8,6 +8,21 @@ SDD is a disciplined AI-assisted development workflow where every feature starts
 
 This prevents the common failure mode of AI-assisted development: jumping straight to code from a vague prompt, producing something that half-works and can't be maintained.
 
+## SDD Workflow
+
+```
+/sdd-init  →  /sdd-analyse  →  /sdd-refine*  →  /sdd-plan  →  /sdd-implement  →  /sdd-review  →  /sdd-archive
+(once)                          (optional,
+                                repeatable)
+```
+
+![sdd-workflow.png](sdd-workflow.png)
+
+Each skill picks up where the previous one left off using the files produced along the way (`feature.md`, `plan.md`).
+At any point you can inspect or manually edit these files before continuing.
+
+---
+
 ## Prerequisites
 
 - [Claude Code](https://claude.ai/code) or [Codex](https://openai.com/codex/) installed and running in your project
@@ -27,21 +42,6 @@ Start your AI Agent in your project and run:
 /sdd-init
 ```
 If AI Agent begins analysing your project structure, the skills are installed correctly.
-
----
-
-## The Workflow
-
-```
-/sdd-init  →  /sdd-analyse  →  /sdd-refine*  →  /sdd-plan  →  /sdd-implement  →  /sdd-review  →  /sdd-archive
-(once)                          (optional,
-                                repeatable)
-```
-
-![sdd-workflow.png](sdd-workflow.png)
-
-Each skill picks up where the previous one left off using the files produced along the way (`feature.md`, `plan.md`). 
-At any point you can inspect or manually edit these files before continuing.
 
 ---
 
