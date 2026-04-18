@@ -21,6 +21,15 @@ This prevents the common failure mode of AI-assisted development: jumping straig
 Each skill picks up where the previous one left off using the files produced along the way (`feature.md`, `plan.md`).
 At any point you can inspect or manually edit these files before continuing.
 
+### Fast path
+
+```
+/sdd-init  →  /sdd-yolo <feature description>
+(once)
+```
+
+`/sdd-yolo` runs the full pipeline — analyse → plan → implement → review → archive — with a single confirmation gate before implementation begins. It stops automatically if Critical or Major issues are found in the review.
+
 ---
 
 ## Prerequisites
@@ -117,6 +126,18 @@ AI Agent reviews all files changed in this branch across 8 dimensions (AC covera
 ```
 
 AI Agent verifies all AC checkboxes are ticked, moves `feature.md` and `plan.md` into `docs/specs-archive/jwt-authentication/`, and creates a brief `README.md` there summarising what was built and any notable decisions. Commit the archive directory — it is your project's institutional memory.
+
+---
+
+### Fast path — Steps 2–7 in one command
+
+If you want to skip the individual step commands and ship in one shot, use `/sdd-yolo` instead:
+
+```
+/sdd-yolo Add JWT-based authentication with refresh token support
+```
+
+AI Agent runs analyse → plan → implement → review → archive automatically. It pauses once for your confirmation before writing any code, then runs the full pipeline unattended. If the review finds Critical or Major issues it stops and reports rather than archiving.
 
 ---
 
@@ -313,6 +334,30 @@ AI Agent verifies all AC checkboxes are ticked, moves `feature.md` and `plan.md`
 **Input:** Optional feature name argument
 **Output:** `docs/specs-archive/<feature-name>/feature.md`, `docs/specs-archive/<feature-name>/plan.md`, `docs/specs-archive/<feature-name>/README.md`
 **Requires:** `feature.md`, `plan.md` in project root
+
+---
+
+### `/sdd-yolo` — Full Pipeline (Fast Path)
+
+**Purpose:** Runs the complete SDD pipeline — analyse → plan → implement → review → archive — with a single confirmation gate before implementation. Use when you want to ship a well-understood feature with minimal interruptions.
+
+**Usage:**
+```
+/sdd-yolo Add JWT-based authentication with refresh token support
+```
+
+**What it does:**
+1. Analyses the feature request and writes `feature.md` (asks only blocker-level clarifying questions, max 3)
+2. Reads `feature.md` and writes `plan.md` immediately
+3. Presents a compact spec + plan summary and waits for **one confirmation** (`PROCEED`) before writing any code
+4. Implements the full plan, compiling and running tests after each layer — stops if any AC is failing
+5. Runs the full code review across all 8 dimensions
+6. **If verdict is ✅ Ready to merge or 🟡 Merge after minor fixes:** runs `/sdd-archive` automatically
+7. **If verdict is 🟠 Requires fixes or 🔴 Do not merge:** stops and reports — leaves `feature.md` and `plan.md` in place for manual continuation
+
+**Input:** Feature description as argument (required)
+**Output:** Fully implemented, reviewed, and archived feature — or a stopped pipeline with a clear report
+**Requires:** `docs/project.md` (run `/sdd-init` first if it doesn't exist)
 
 ---
 
