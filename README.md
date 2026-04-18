@@ -304,9 +304,11 @@ AI Agent verifies all AC checkboxes are ticked, moves `feature.md` and `plan.md`
 **What it does:**
 1. Determines the archive folder name — from your argument (kebab-case) or derived from the `# Feature:` heading in `feature.md`
 2. Checks that all AC checkboxes in `feature.md` are ticked — warns you and asks for confirmation if any are unchecked
-3. Moves `feature.md` and `plan.md` into `docs/specs-archive/<feature-name>/`
-4. Creates `docs/specs-archive/<feature-name>/README.md` with a brief summary of what was built, key files, and notable decisions
-5. Reminds you to commit the `docs/specs-archive/<feature-name>/` directory to version control
+3. Updates `docs/project.md` with: the new feature entry, any architectural decisions made, new API endpoints, and new environment/configuration keys introduced by the feature
+4. Shows a summary of every proposed change to `project.md` and asks for your confirmation before writing
+5. Moves `feature.md` and `plan.md` into `docs/specs-archive/<feature-name>/`
+6. Creates `docs/specs-archive/<feature-name>/README.md` with a brief summary of what was built, key files, and notable decisions
+7. Reminds you to commit the `docs/specs-archive/<feature-name>/` directory and `docs/project.md` to version control
 
 **Input:** Optional feature name argument
 **Output:** `docs/specs-archive/<feature-name>/feature.md`, `docs/specs-archive/<feature-name>/plan.md`, `docs/specs-archive/<feature-name>/README.md`

@@ -1,12 +1,13 @@
 ---
 name: sdd-archive
 description: >
-  SDD step 7. Archive feature.md and plan.md into docs/specs-archive/<feature-name>/ directory.
+  SDD step 7. Archive feature.md and plan.md into docs/specs-archive/<feature-name>/ directory,
+  then update docs/project.md with the new feature, and any architecture decisions made. 
   Use after /sdd-review is complete and the feature is ready to merge.
 argument-hint: <feature-name> (optional, derived from feature.md if omitted)
 ---
 
-# SDD Step 4: Archive
+# SDD Step 7: Archive
 
 ## Process
 
@@ -19,7 +20,104 @@ Example: "User Authentication" → `user-authentication`
 Read `feature.md` and check that all acceptance criteria checkboxes are ticked.
 If any are unchecked, warn the user and ask for confirmation before archiving.
 
-### 3. Archive
+### 3. Update docs/project.md
+
+This is a critical step. Read `docs/project.md` in full, then read the archived
+`feature.md` and `plan.md` to extract what actually changed. Update `project.md`
+across the following sections — add sections if they do not already exist.
+
+#### 3a. Features List
+Locate or create a `## Features` section. Add the new feature as a single line entry:
+
+```markdown
+## Features
+- **<Feature Name>**: <one-sentence description of what it does> (`docs/<feature-name>/`)
+```
+
+Preserve the existing list. Append the new entry — do not reorder or remove existing entries.
+
+#### 3b. Architecture Decisions
+Scan `feature.md` (Open Questions, Technical Scope) and `plan.md` (Architecture Decisions)
+for any decisions that represent a meaningful change or addition to how the system is built.
+
+Examples of what qualifies:
+- A new architectural pattern introduced (e.g., added an event-driven flow, introduced CQRS for a module)
+- A cross-cutting decision that will affect future features (e.g., "all auth tokens use RS256 signing")
+- A deliberate deviation from existing conventions, with rationale
+- A new integration point with an external system
+
+Examples of what does NOT qualify:
+- Routine implementation choices that follow existing conventions
+- File naming or package placement decisions
+- Minor refactors that don't change architectural direction
+
+For qualifying decisions, locate or create an `## Architecture Decisions` section:
+
+```markdown
+## Architecture Decisions
+
+| Date | Decision | Rationale | Feature |
+|------|----------|-----------|---------|
+| <date> | <what was decided> | <why> | [<Feature Name>](docs/<feature-name>/) |
+```
+
+If the table already exists, append a new row. Do not recreate the table.
+
+#### 3c. API Surface (if applicable)
+If the feature added or changed REST endpoints, locate or create an `## API` section
+and document the new endpoints:
+
+```markdown
+## API
+| Method | Path | Description | Auth Required |
+|--------|------|-------------|---------------|
+| POST | /api/v1/auth/login | Authenticate user, returns JWT | No |
+| POST | /api/v1/auth/refresh | Refresh access token | Yes (refresh token) |
+```
+
+Only add endpoints that are new or changed. Preserve existing entries.
+
+#### 3d. Environment / Configuration
+If the feature introduced new environment variables, configuration keys, or
+`application.properties`/`application.yml` entries, add them to an
+`## Environment & Configuration` section:
+
+```markdown
+## Environment & Configuration
+| Key | Description | Required | Default |
+|-----|-------------|----------|---------|
+| JWT_SECRET | Secret key for JWT signing | Yes | — |
+| JWT_EXPIRY_MINUTES | Access token TTL in minutes | No | 15 |
+```
+
+### 4. Show the project.md Changes
+Before writing, present a summary of every change you are about to make to `project.md`:
+
+```
+## Proposed project.md Updates
+
+### Features (1 addition)
+- Added: JWT Authentication
+
+### Architecture Decisions (1 addition)
+- Added: All tokens signed with RS256; public key distributed via /.well-known/jwks.json
+
+### API (2 additions)
+- Added: POST /api/v1/auth/login
+- Added: POST /api/v1/auth/refresh
+
+### Environment & Configuration (2 additions)
+- Added: JWT_SECRET
+- Added: JWT_EXPIRY_MINUTES
+
+### No changes to
+- Tech Stack, Architecture overview, Conventions
+```
+
+Ask the user to confirm before writing. If they request changes to the proposed
+updates, apply their corrections first, then write.
+
+### 5. Archive
 Run the following operations:
 ```bash
 mkdir -p docs/specs-archive/<feature-name>
@@ -27,8 +125,8 @@ mv feature.md docs/specs-archive/<feature-name>/feature.md
 mv plan.md docs/specs-archive/<feature-name>/plan.md
 ```
 
-### 4. Create a Brief Summary
-Append a one-paragraph summary to `docs/specs-archive/<feature-name>/README.md`:
+### 6. Create a Brief Summary
+Create `docs/specs-archive/<feature-name>/README.md`:
 
 ```markdown
 # <Feature Name>
@@ -38,7 +136,8 @@ Implemented on: <date>
 <Brief description of what was built, key files, and any notable decisions.>
 ```
 
-### 5. Confirm
-Report to the user:
-- What was archived and where
-- Remind them to commit the `docs/specs-archive/<feature-name>/` directory to version control
+### 7. Confirm
+Report the final summary to the user:
+- Files archived to `docs/specs-archive/<feature-name>/`
+- Sections updated in `docs/project.md`
+- Remind them to commit both `docs/specs-archive/<feature-name>/` and `docs/project.md` to version control
