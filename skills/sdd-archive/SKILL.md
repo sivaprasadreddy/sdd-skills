@@ -1,7 +1,7 @@
 ---
 name: sdd-archive
 description: >
-  SDD step 7. Archive feature.md and plan.md into docs/specs-archive/<feature-name>/ directory,
+  SDD step 7. Archive feature.md and plan.md into docs/specs-archive/<yyyymmddHHMM>-<feature-name>/ directory,
   then update docs/project.md with the new feature, and any architecture decisions made. 
   Use after /sdd-review is complete and the feature is ready to merge.
 argument-hint: <feature-name> (optional, derived from feature.md if omitted)
@@ -11,8 +11,8 @@ argument-hint: <feature-name> (optional, derived from feature.md if omitted)
 
 ## Inputs
 
-| Input | Required | Description | Example |
-|-------|----------|-------------|---------|
+| Input          | Required | Description                                                                      | Example              |
+|----------------|----------|----------------------------------------------------------------------------------|----------------------|
 | `feature_name` | Optional | Archive folder name in kebab-case. Derived from `feature.md` heading if omitted. | `jwt-authentication` |
 
 ## Steps
@@ -31,7 +31,7 @@ Check the conversation for `feature_name` and for `feature.md` / `plan.md` in th
 ## Process
 
 ### 1. Determine the Feature Name
-Use `feature_name` from Step 0.
+Use `feature_name` from Step 0. Capture the current timestamp using `date +"%Y%m%d%H%M"` and prepend it to form the archive directory name: `<yyyymmddHHMM>-<feature-name>` (e.g. `202604191430-jwt-authentication`).
 
 ### 2. Verify Completion
 Read `feature.md` and check that all acceptance criteria checkboxes are ticked.
@@ -137,13 +137,14 @@ updates, apply their corrections first, then write.
 ### 5. Archive
 Run the following operations:
 ```bash
-mkdir -p docs/specs-archive/<feature-name>
-mv feature.md docs/specs-archive/<feature-name>/feature.md
-mv plan.md docs/specs-archive/<feature-name>/plan.md
+ARCHIVE_DIR="docs/specs-archive/$(date +"%Y%m%d%H%M")-<feature-name>"
+mkdir -p "$ARCHIVE_DIR"
+mv feature.md "$ARCHIVE_DIR/feature.md"
+mv plan.md "$ARCHIVE_DIR/plan.md"
 ```
 
 ### 6. Create a Brief Summary
-Create `docs/specs-archive/<feature-name>/README.md`:
+Create `docs/specs-archive/<yyyymmddHHMM>-<feature-name>/README.md`:
 
 ```markdown
 # <Feature Name>
@@ -155,6 +156,6 @@ Implemented on: <date>
 
 ### 7. Confirm
 Report the final summary to the user:
-- Files archived to `docs/specs-archive/<feature-name>/`
+- Files archived to `docs/specs-archive/<yyyymmddHHMM>-<feature-name>/`
 - Sections updated in `docs/project.md`
-- Remind them to commit both `docs/specs-archive/<feature-name>/` and `docs/project.md` to version control
+- Remind them to commit both `docs/specs-archive/<yyyymmddHHMM>-<feature-name>/` and `docs/project.md` to version control
