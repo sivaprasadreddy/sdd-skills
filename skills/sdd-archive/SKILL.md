@@ -9,12 +9,29 @@ argument-hint: <feature-name> (optional, derived from feature.md if omitted)
 
 # SDD Step 7: Archive
 
+## Inputs
+
+| Input | Required | Description | Example |
+|-------|----------|-------------|---------|
+| `feature_name` | Optional | Archive folder name in kebab-case. Derived from `feature.md` heading if omitted. | `jwt-authentication` |
+
+## Steps
+
+### Step 0: Validate Inputs (ALWAYS DO THIS FIRST)
+
+Check the conversation for `feature_name` and for `feature.md` / `plan.md` in the project root.
+
+- If `feature.md` or `plan.md` do not exist → stop and tell the user both files are required.
+- If `feature_name` is provided → use it as the archive directory name (kebab-case).
+- If `feature_name` is missing → read `feature.md` and derive it from the `# Feature:` heading,
+  converting to kebab-case (e.g. "User Authentication" → `user-authentication`). Proceed automatically.
+
+---
+
 ## Process
 
 ### 1. Determine the Feature Name
-If `$ARGUMENTS` is provided, use it as the directory name (kebab-case).
-Otherwise, read `feature.md` and derive the name from the `# Feature:` heading, converting to kebab-case.
-Example: "User Authentication" → `user-authentication`
+Use `feature_name` from Step 0.
 
 ### 2. Verify Completion
 Read `feature.md` and check that all acceptance criteria checkboxes are ticked.

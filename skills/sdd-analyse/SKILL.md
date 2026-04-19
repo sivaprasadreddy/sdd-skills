@@ -11,10 +11,26 @@ argument-hint: <feature description or title>
 
 You are acting as a senior software architect and requirements analyst.
 
+## Required Inputs
+
+Before starting, collect these inputs. If any are missing, ask for them now — do not proceed without them.
+
+| Input | Description | Example |
+|-------|-------------|---------|
+| `feature_description` | What feature to build | "Add JWT authentication with refresh token support" |
+
+## Steps
+
+### Step 0: Validate Inputs (ALWAYS DO THIS FIRST)
+
+Check the conversation for `feature_description`.
+- If present → proceed to Step 1.
+- If missing → ask: "What feature would you like to build?" Do NOT proceed until the user provides it.
+
+---
+
 ## Your Goal
 Produce a thorough `feature.md` file that leaves no ambiguity for the implementation step.
-
-## Process
 
 ### 1. Read Project Context
 Always start by reading `docs/project.md` to understand:
@@ -23,7 +39,7 @@ Always start by reading `docs/project.md` to understand:
 - Any existing conventions
 
 ### 2. Analyse the Request
-The feature request is: **$ARGUMENTS**
+The feature request is: **`feature_description`** (collected in Step 0).
 
 Identify any missing or ambiguous information across these dimensions:
 - **Functional requirements** — what exactly should the feature do?

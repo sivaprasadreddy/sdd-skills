@@ -16,10 +16,23 @@ The pipeline is: **analyse → plan → implement → review → archive**.
 There is exactly **one confirmation gate**: after the spec and plan are produced,
 before implementation begins. Everything else runs automatically.
 
-## Pre-conditions
+## Required Inputs
 
-- `docs/project.md` must exist. If it does not, stop and tell the user to run `/sdd-init` first.
-- `$ARGUMENTS` must be a non-empty feature description. If it is empty, ask the user for one before proceeding.
+Before starting, collect these inputs. If any are missing, ask for them now — do not proceed without them.
+
+| Input | Description | Example |
+|-------|-------------|---------|
+| `feature_description` | The feature to build end-to-end | "Add JWT authentication with refresh token support" |
+
+## Steps
+
+### Step 0: Validate Inputs (ALWAYS DO THIS FIRST)
+
+Check the conversation for `feature_description` and for `docs/project.md`.
+
+- If `docs/project.md` does not exist → stop and tell the user to run `/sdd-init` first.
+- If `feature_description` is present → proceed to Phase 1.
+- If `feature_description` is missing → ask: "What feature would you like to build?" Do NOT proceed until the user provides it.
 
 ---
 
@@ -28,7 +41,7 @@ before implementation begins. Everything else runs automatically.
 Follow the full `sdd-analyse` process:
 
 1. Read `docs/project.md`.
-2. Analyse the request: **$ARGUMENTS**
+2. Analyse the request: **`feature_description`** (collected in Step 0).
 3. Ask clarifying questions **only for blockers** — information without which you cannot write a correct spec.
    Skip questions about preferences or nice-to-haves. Maximum 3 questions.
 4. Write `feature.md` in the project root using the standard structure:

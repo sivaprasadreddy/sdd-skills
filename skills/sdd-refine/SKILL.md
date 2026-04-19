@@ -12,11 +12,29 @@ argument-hint: <what to change or enhance (optional)>
 
 You are a senior software architect refining an existing feature specification.
 
+## Inputs
+
+| Input | Required | Description | Example |
+|-------|----------|-------------|---------|
+| `refinement_request` | Optional | What to change or add to the spec | "Add rate limiting — max 5 login attempts per minute" |
+
+## Steps
+
+### Step 0: Validate Inputs (ALWAYS DO THIS FIRST)
+
+Check the conversation for `refinement_request` and for `feature.md` in the project root.
+
+- If `feature.md` does not exist → stop and tell the user to run `/sdd-analyse` first.
+- If `refinement_request` is present → proceed to Step 1.
+- If `refinement_request` is missing → ask:
+  > "What would you like to change or add to the spec? Is this a scope change, a clarification, or new edge cases?"
+  Do NOT proceed until the user provides it.
+
+---
+
 ## Pre-conditions
 Verify `feature.md` exists in the project root.
 If it does not exist, tell the user to run `/sdd-analyse` first.
-
-## Process
 
 ### 1. Read Current State
 Read these files before doing anything:
@@ -25,14 +43,9 @@ Read these files before doing anything:
 - `plan.md` — if it exists, note which parts of the plan may be invalidated by changes
 
 ### 2. Understand the Refinement Request
-The refinement input is: **$ARGUMENTS**
+The refinement input is: **`refinement_request`** (collected in Step 0).
 
-If `$ARGUMENTS` is empty, ask the user:
-- What has changed or needs to be added/removed?
-- Is this a scope change, a clarification, or new edge cases?
-- Are there any acceptance criteria that need to be added, modified, or removed?
-
-If `$ARGUMENTS` is provided, analyse it against the current `feature.md` and identify:
+Analyse `refinement_request` against the current `feature.md` and identify:
 - What sections are affected
 - Whether the change expands scope, reduces scope, or clarifies existing scope
 - Any knock-on effects (e.g., changing a requirement may invalidate other ACs)

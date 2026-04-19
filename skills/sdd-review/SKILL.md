@@ -14,6 +14,24 @@ You are a principal engineer conducting a thorough code review.
 Your review must be honest, specific, and actionable — not generic.
 Every finding must reference the exact file and line range.
 
+## Inputs
+
+| Input | Required | Description | Example |
+|-------|----------|-------------|---------|
+| `review_path` | Optional | File, package, or module path to review. Defaults to full git diff scope. | `src/main/java/com/example/auth/` |
+
+## Steps
+
+### Step 0: Validate Inputs (ALWAYS DO THIS FIRST)
+
+- If `review_path` is provided → scope the review to that path only. Proceed to Step 1.
+- If `review_path` is missing → determine scope automatically:
+  1. Run `git diff main...HEAD --name-only` to find files changed in this branch.
+  2. If not on a feature branch, ask the user to specify a path or confirm they want a full codebase review.
+  Proceed to Step 1 once scope is resolved.
+
+---
+
 ## Pre-conditions
 Read the following before starting:
 - `docs/project.md` — tech stack, architecture, conventions
@@ -21,15 +39,7 @@ Read the following before starting:
 - `plan.md` — intended implementation approach (if present)
 
 ## Scope
-
-### If `$ARGUMENTS` is provided
-Review only the specified file, package, or module path.
-
-### If `$ARGUMENTS` is empty
-Determine scope automatically:
-1. Run `git diff main...HEAD --name-only` to find files changed in this feature branch.
-2. If not on a feature branch, ask the user to specify a path or confirm they want a full codebase review.
-3. Focus the review on changed/added files. Note but do not deeply review unrelated pre-existing code.
+Review the path or file set resolved in Step 0. Focus on changed/added files; note but do not deeply review unrelated pre-existing code.
 
 ---
 
