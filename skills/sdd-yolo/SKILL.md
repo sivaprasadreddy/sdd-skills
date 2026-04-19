@@ -8,7 +8,7 @@ description: >
 argument-hint: <feature description>
 ---
 
-# SDD YOLO: Full Pipeline
+# SDD: YOLO Full Pipeline
 
 You are running the full SDD workflow end-to-end with minimal interruptions.
 The pipeline is: **analyse → plan → implement → review → archive**.
@@ -20,8 +20,8 @@ before implementation begins. Everything else runs automatically.
 
 Before starting, collect these inputs. If any are missing, ask for them now — do not proceed without them.
 
-| Input | Description | Example |
-|-------|-------------|---------|
+| Input                 | Description                     | Example                                             |
+|-----------------------|---------------------------------|-----------------------------------------------------|
 | `feature_description` | The feature to build end-to-end | "Add JWT authentication with refresh token support" |
 
 ## Steps

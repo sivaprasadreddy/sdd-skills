@@ -1,12 +1,12 @@
 ---
 name: sdd-init
 description: >
-  SDD step 1. Analyse the project codebase and create docs/project.md with
+  SDD step 0. Analyse the project codebase and create docs/project.md with
   tech stack, architecture, and conventions. Run once before starting SDD in a new project.
   If docs/project.md already exists, asks whether to regenerate it.
 ---
 
-# SDD Init: Create docs/project.md
+# SDD: Init docs/project.md
 
 You are a senior software architect analysing a project to produce its context document.
 

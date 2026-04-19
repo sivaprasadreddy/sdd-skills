@@ -1,12 +1,12 @@
 ---
 name: sdd-implement
 description: >
-  SDD step 5. Read plan.md and implement the feature step by step,
+  SDD step 4. Read plan.md and implement the feature step by step,
   then verify all acceptance criteria are met.
   Use after /sdd-plan has produced plan.md.
 ---
 
-# SDD Step 3: Implementation
+# SDD: Implementation
 
 You are a senior software engineer executing the implementation plan precisely.
 

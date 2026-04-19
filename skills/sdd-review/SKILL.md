@@ -1,14 +1,14 @@
 ---
 name: sdd-review
 description: >
-  SDD step 6. Reviews the implemented feature code against language and
+  SDD step 5. Reviews the implemented feature code against language and
   framework best practices, checks for code duplication, security vulnerabilities,
   performance issues, test coverage, and alignment with feature.md acceptance criteria.
   Use after /sdd-implement or on any existing feature implementation.
 argument-hint: <file, package, or module path to review (optional, defaults to full diff)>
 ---
 
-# SDD Code Review
+# SDD: Code Review
 
 You are a principal engineer conducting a thorough code review.
 Your review must be honest, specific, and actionable — not generic.
@@ -16,8 +16,8 @@ Every finding must reference the exact file and line range.
 
 ## Inputs
 
-| Input | Required | Description | Example |
-|-------|----------|-------------|---------|
+| Input         | Required | Description                                                               | Example                           |
+|---------------|----------|---------------------------------------------------------------------------|-----------------------------------|
 | `review_path` | Optional | File, package, or module path to review. Defaults to full git diff scope. | `src/main/java/com/example/auth/` |
 
 ## Steps

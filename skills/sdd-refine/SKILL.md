@@ -1,21 +1,21 @@
 ---
 name: sdd-refine
 description: >
-  SDD step 3 (optional, repeatable). Read an existing feature.md and refine it by updating or
+  SDD step 2 (optional, repeatable). Read an existing feature.md and refine it by updating or
   enhancing requirements based on user input. Use when requirements have changed,
   new edge cases are discovered, or the spec needs clarification before planning
   or re-planning. Run before /sdd-plan if plan.md already exists.
 argument-hint: <what to change or enhance (optional)>
 ---
 
-# SDD Refinement: Update Feature Spec
+# SDD: Refine Feature Spec
 
 You are a senior software architect refining an existing feature specification.
 
 ## Inputs
 
-| Input | Required | Description | Example |
-|-------|----------|-------------|---------|
+| Input                | Required | Description                       | Example                                               |
+|----------------------|----------|-----------------------------------|-------------------------------------------------------|
 | `refinement_request` | Optional | What to change or add to the spec | "Add rate limiting — max 5 login attempts per minute" |
 
 ## Steps

@@ -58,7 +58,7 @@ If AI Agent begins analysing your project structure, the skills are installed co
 
 Here is a complete end-to-end example of adding JWT authentication to a Spring Boot project.
 
-### Step 1 — Initialise project context (once per project)
+### Step 0 — Initialize project context (once per project)
 
 ```
 /sdd-init
@@ -68,7 +68,7 @@ AI Agent scans your build files and source tree, asks for your project name, mis
 
 ---
 
-### Step 2 — Analyse the feature
+### Step 1 — Analyse the feature
 
 ```
 /sdd-analyse Add JWT-based authentication with refresh token support
@@ -78,7 +78,7 @@ AI Agent reads `docs/project.md`, asks up to 5 clarifying questions (token expir
 
 ---
 
-### Step 3 — Refine if needed _(optional, repeatable)_
+### Step 2 — Refine if needed _(optional, repeatable)_
 
 ```
 /sdd-refine Add rate limiting — max 5 failed login attempts per minute
@@ -88,7 +88,7 @@ AI Agent shows a diff of the proposed changes to `feature.md` and asks for confi
 
 ---
 
-### Step 4 — Plan the implementation
+### Step 3 — Plan the implementation
 
 ```
 /sdd-plan
@@ -98,7 +98,7 @@ AI Agent reads `feature.md` and `docs/project.md`, identifies your exact stack a
 
 ---
 
-### Step 5 — Implement
+### Step 4 — Implement
 
 ```
 /sdd-implement
@@ -108,7 +108,7 @@ AI Agent works through `plan.md` step by step, reads existing code first to matc
 
 ---
 
-### Step 6 — Review
+### Step 5 — Review
 
 ```
 /sdd-review
@@ -118,7 +118,7 @@ AI Agent reviews all files changed in this branch across 8 dimensions (AC covera
 
 ---
 
-### Step 7 — Archive
+### Step 6 — Archive
 
 ```
 /sdd-archive 
@@ -129,7 +129,7 @@ AI Agent verifies all AC checkboxes are ticked, moves `feature.md` and `plan.md`
 
 ---
 
-### Fast path — Steps 2–7 in one command
+### Fast path — Steps 1–6 in one command
 
 If you want to skip the individual step commands and ship in one shot, use `/sdd-yolo` instead:
 
@@ -411,7 +411,7 @@ Read `docs/project.md` for mission, tech stack, and architecture before making a
 
 ## SDD Workflow
 This project uses Spec Driven Development. The workflow is:
-1. `/sdd-init` → analyses codebase and produces `docs/project.md` (run once per project)
+1. `/sdd-init` → analyses the codebase and produces `docs/project.md` (run once per project)
 2. `/sdd-analyse <feature description>` → produces `feature.md`
 3. `/sdd-refine <change>` → updates `feature.md` (optional, repeatable)
 4. `/sdd-plan` → reads `feature.md`, produces `plan.md`

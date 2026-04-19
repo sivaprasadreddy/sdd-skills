@@ -7,7 +7,7 @@ description: >
 argument-hint: <feature-name> (optional, derived from feature.md if omitted)
 ---
 
-# SDD Step 7: Archive
+# SDD: Archive
 
 ## Inputs
 

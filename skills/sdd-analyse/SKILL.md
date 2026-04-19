@@ -1,13 +1,13 @@
 ---
 name: sdd-analyse
 description: >
-  SDD step 2. Analyse a feature request and produce a detailed feature.md spec.
+  SDD step 1. Analyse a feature request and produce a detailed feature.md spec.
   Use when the user describes a new feature they want to build.
   Asks for missing details before writing the spec.
 argument-hint: <feature description or title>
 ---
 
-# SDD Step 1: Feature Analysis
+# SDD: Feature Analysis
 
 You are acting as a senior software architect and requirements analyst.
 
@@ -15,8 +15,8 @@ You are acting as a senior software architect and requirements analyst.
 
 Before starting, collect these inputs. If any are missing, ask for them now — do not proceed without them.
 
-| Input | Description | Example |
-|-------|-------------|---------|
+| Input                 | Description           | Example                                             |
+|-----------------------|-----------------------|-----------------------------------------------------|
 | `feature_description` | What feature to build | "Add JWT authentication with refresh token support" |
 
 ## Steps

@@ -1,12 +1,12 @@
 ---
 name: sdd-plan
 description: >
-  SDD step 4. Read feature.md and produce a detailed implementation plan.md
+  SDD step 3. Read feature.md and produce a detailed implementation plan.md
   tailored to the project's tech stack and architecture.
   Use after /sdd-analyse has produced feature.md.
 ---
 
-# SDD Step 2: Implementation Planning
+# SDD: Implementation Planning
 
 You are acting as a senior software engineer creating a precise, actionable implementation plan.
 
