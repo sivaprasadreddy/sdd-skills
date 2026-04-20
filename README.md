@@ -32,6 +32,18 @@ At any point you can inspect or manually edit these files before continuing.
 
 ---
 
+## Who is this for?
+
+This SDD workflow is useful across different working contexts. The workflow covers **feature development only** — from idea to reviewed, archived code. Deployment is out of scope.
+
+**Solo developers and indie hackers** working on SaaS products typically own both the requirements and the code. They can use the full pipeline end-to-end: `/sdd-analyse` to turn an idea into a spec, `/sdd-plan` to produce an implementation plan, and `/sdd-implement` through `/sdd-archive` to ship and document it.
+
+**Enterprise teams** usually separate requirements from implementation. A Business Analyst talking to stakeholders can use `/sdd-analyse` and `/sdd-refine` to produce a structured, unambiguous `feature.md` spec — then hand it to the development team, who pick up from `/sdd-plan` onwards.
+
+In both cases, the structured spec in `feature.md` is the handoff artifact. The earlier in the workflow you invest in it, the less rework happens downstream.
+
+---
+
 ## Prerequisites
 
 - [Claude Code](https://claude.ai/code) or [Codex](https://openai.com/codex/) installed and running in your project
