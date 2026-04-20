@@ -42,6 +42,9 @@ This SDD workflow is useful across different working contexts. The workflow cove
 
 In both cases, the structured spec in `feature.md` is the handoff artifact. The earlier in the workflow you invest in it, the less rework happens downstream.
 
+**NOTE:** 
+**A spec is not a complete, final contract.** It captures what is known at the time it is written. Requirements evolve — new edge cases surface during implementation, stakeholders refine their thinking, and constraints change. When that happens, use `/sdd-refine` to update the current spec, or start a new `/sdd-analyse` cycle for the follow-on work. The goal is not a perfect upfront specification; it is a shared, written understanding that keeps the team aligned as understanding grows.
+
 ---
 
 ## Prerequisites
