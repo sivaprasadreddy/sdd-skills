@@ -12,6 +12,7 @@ import com.intellij.openapi.vfs.newvfs.events.VFileEvent;
 import dev.sivalabs.sdd.plugin.model.*;
 import dev.sivalabs.sdd.plugin.parser.FeatureMdParser;
 import dev.sivalabs.sdd.plugin.parser.PlanMdParser;
+import dev.sivalabs.sdd.plugin.parser.ReviewReportParser;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -28,6 +29,7 @@ public final class SddStateService {
     private volatile SddState currentState;
     private final FeatureMdParser featureParser = new FeatureMdParser();
     private final PlanMdParser planParser = new PlanMdParser();
+    private final ReviewReportParser reviewParser = new ReviewReportParser();
 
     public SddStateService(@NotNull Project project) {
         this.project = project;
@@ -82,7 +84,8 @@ public final class SddStateService {
                 boolean relevant = events.stream()
                         .anyMatch(e -> {
                             String path = e.getPath();
-                            return path.endsWith("/feature.md") || path.endsWith("/plan.md");
+                            return path.endsWith("/feature.md") || path.endsWith("/plan.md")
+                                    || path.endsWith("/review.md");
                         });
                 if (relevant) {
                     ApplicationManager.getApplication().executeOnPooledThread(SddStateService.this::refresh);
@@ -96,7 +99,8 @@ public final class SddStateService {
         if (basePath == null) return SddState.empty();
 
         VirtualFile featureMd = LocalFileSystem.getInstance().findFileByPath(basePath + "/feature.md");
-        VirtualFile planMd = LocalFileSystem.getInstance().findFileByPath(basePath + "/plan.md");
+        VirtualFile planMd    = LocalFileSystem.getInstance().findFileByPath(basePath + "/plan.md");
+        VirtualFile reviewMd  = LocalFileSystem.getInstance().findFileByPath(basePath + "/review.md");
 
         if (featureMd == null || !featureMd.exists()) {
             return SddState.empty();
@@ -104,13 +108,17 @@ public final class SddStateService {
 
         FeatureSpec featureSpec = featureParser.parse(readFile(featureMd));
 
+        ReviewReport reviewReport = (reviewMd != null && reviewMd.exists())
+                ? reviewParser.parse(readFile(reviewMd))
+                : null;
+
         if (planMd == null || !planMd.exists()) {
-            return new SddState(featureSpec, WorkflowStage.ANALYSE, Collections.emptyList());
+            return new SddState(featureSpec, WorkflowStage.ANALYSE, Collections.emptyList(), reviewReport);
         }
 
         List<PlanStep> planSteps = planParser.parse(readFile(planMd));
         WorkflowStage stage = determineStage(featureSpec.getAcceptanceCriteria(), planSteps);
-        return new SddState(featureSpec, stage, planSteps);
+        return new SddState(featureSpec, stage, planSteps, reviewReport);
     }
 
     private WorkflowStage determineStage(List<AcItem> acs, List<PlanStep> planSteps) {

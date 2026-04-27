@@ -26,10 +26,13 @@
 
     <extensions defaultExtensionNs="com.intellij">
 
-        <!-- Project-level service that reads feature.md / plan.md and owns SddState -->
+        <!-- Project-level service that reads feature.md / plan.md / review.md and owns SddState -->
         <projectService serviceImplementation="dev.sivalabs.sdd.plugin.service.SddStateService"/>
 
-        <!-- Bottom tool window with Pipeline and Plan tabs -->
+        <!-- Project-level service that paints gutter annotations for review findings -->
+        <projectService serviceImplementation="dev.sivalabs.sdd.plugin.gutter.SddGutterAnnotationService"/>
+
+        <!-- Bottom tool window with Pipeline, Spec, Plan, Review tabs -->
         <toolWindow id="SDD"
                     displayName="SDD"
                     anchor="bottom"
@@ -40,6 +43,9 @@
         <statusBarWidgetFactory id="SddStatusBarWidget"
                                 implementation="dev.sivalabs.sdd.plugin.statusbar.SddStatusBarWidgetFactory"
                                 order="after Position"/>
+
+        <!-- Eagerly initialize both services so gutter annotations work before the tool window opens -->
+        <postStartupActivity implementation="dev.sivalabs.sdd.plugin.startup.SddStartupActivity"/>
 
     </extensions>
 </idea-plugin>
