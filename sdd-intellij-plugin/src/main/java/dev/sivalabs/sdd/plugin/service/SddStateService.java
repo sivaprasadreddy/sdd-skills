@@ -1,6 +1,7 @@
 package dev.sivalabs.sdd.plugin.service;
 
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
@@ -17,6 +18,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service(Service.Level.PROJECT)
 public final class SddStateService {
@@ -45,6 +48,33 @@ public final class SddStateService {
         publishStateChange();
     }
 
+    /** Toggle one AC checkbox in feature.md and refresh state. */
+    public void toggleAc(String acId, boolean checked) {
+        String basePath = project.getBasePath();
+        if (basePath == null) return;
+
+        VirtualFile vf = LocalFileSystem.getInstance().findFileByPath(basePath + "/feature.md");
+        if (vf == null) return;
+
+        try {
+            String content = new String(vf.contentsToByteArray(), StandardCharsets.UTF_8);
+            String updated = toggleAcLine(content, acId, checked);
+            if (updated.equals(content)) return;
+
+            WriteCommandAction.runWriteCommandAction(project, "Toggle AC " + acId, null, () -> {
+                try {
+                    vf.setBinaryContent(updated.getBytes(StandardCharsets.UTF_8));
+                } catch (IOException ex) {
+                    // file write failure — state will stay stale until next refresh
+                }
+            });
+        } catch (IOException e) {
+            // ignore read failure
+        }
+    }
+
+    // ── internals ──────────────────────────────────────────────────
+
     private void setupFileWatcher() {
         project.getMessageBus().connect().subscribe(VirtualFileManager.VFS_CHANGES, new BulkFileListener() {
             @Override
@@ -72,20 +102,15 @@ public final class SddStateService {
             return SddState.empty();
         }
 
-        String featureContent = readFile(featureMd);
-        FeatureMdParser.ParseResult featureResult = featureParser.parse(featureContent);
-        String featureName = featureResult.featureName();
-        List<AcItem> acs = featureResult.acceptanceCriteria();
+        FeatureSpec featureSpec = featureParser.parse(readFile(featureMd));
 
         if (planMd == null || !planMd.exists()) {
-            return new SddState(featureName, WorkflowStage.ANALYSE, acs, Collections.emptyList());
+            return new SddState(featureSpec, WorkflowStage.ANALYSE, Collections.emptyList());
         }
 
-        String planContent = readFile(planMd);
-        List<PlanStep> planSteps = planParser.parse(planContent);
-        WorkflowStage stage = determineStage(acs, planSteps);
-
-        return new SddState(featureName, stage, acs, planSteps);
+        List<PlanStep> planSteps = planParser.parse(readFile(planMd));
+        WorkflowStage stage = determineStage(featureSpec.getAcceptanceCriteria(), planSteps);
+        return new SddState(featureSpec, stage, planSteps);
     }
 
     private WorkflowStage determineStage(List<AcItem> acs, List<PlanStep> planSteps) {
@@ -94,7 +119,6 @@ public final class SddStateService {
             if (checked == acs.size()) return WorkflowStage.REVIEW;
             if (checked > 0) return WorkflowStage.IMPLEMENT;
         }
-
         boolean anyProgress = planSteps.stream()
                 .anyMatch(s -> s.getStatus() == StepStatus.DONE || s.getStatus() == StepStatus.IN_PROGRESS);
         return anyProgress ? WorkflowStage.IMPLEMENT : WorkflowStage.PLAN;
@@ -106,6 +130,20 @@ public final class SddStateService {
         } catch (IOException e) {
             return "";
         }
+    }
+
+    private String toggleAcLine(String content, String acId, boolean checked) {
+        // Matches lines like:  - [ ] **AC-01**:  or  - [x] AC-01
+        Pattern p = Pattern.compile(
+                "(?m)^(- \\[)[ xX](\\] \\*{0,2}" + Pattern.quote(acId) + "\\*{0,2})"
+        );
+        Matcher m = p.matcher(content);
+        StringBuffer sb = new StringBuffer();
+        while (m.find()) {
+            m.appendReplacement(sb, m.group(1) + (checked ? 'x' : ' ') + m.group(2));
+        }
+        m.appendTail(sb);
+        return sb.toString();
     }
 
     private void publishStateChange() {

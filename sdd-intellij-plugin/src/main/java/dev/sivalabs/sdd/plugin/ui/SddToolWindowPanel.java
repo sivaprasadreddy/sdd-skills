@@ -16,16 +16,19 @@ public class SddToolWindowPanel extends JPanel {
         SddStateService stateService = SddStateService.getInstance(project);
 
         PipelinePanel pipelinePanel = new PipelinePanel(project, stateService.getState());
+        SpecPanel specPanel = new SpecPanel(project, stateService.getState());
         PlanPanel planPanel = new PlanPanel(project, stateService.getState());
 
         JBTabbedPane tabbedPane = new JBTabbedPane();
         tabbedPane.addTab("Pipeline", pipelinePanel);
+        tabbedPane.addTab("Spec", specPanel);
         tabbedPane.addTab("Plan", planPanel);
         add(tabbedPane, BorderLayout.CENTER);
 
         project.getMessageBus().connect().subscribe(SddStateTopic.TOPIC, state ->
                 SwingUtilities.invokeLater(() -> {
                     pipelinePanel.updateState(state);
+                    specPanel.updateState(state);
                     planPanel.updateState(state);
                 })
         );
