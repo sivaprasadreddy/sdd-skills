@@ -1,27 +1,45 @@
 <idea-plugin>
-    <!-- Unique id for this plugin. -->
     <id>dev.sivalabs.sdd.plugin</id>
-    <!-- Text to display as the name on Settings | Plugin page -->
     <name>SDD</name>
-    <!-- Text to display as company information on Settings | Plugin page -->
     <vendor url="https://sivalabs.dev">SivaLabs</vendor>
 
-    <!-- Product and plugin compatibility requirements -->
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.java</depends>
 
-    <!-- Text to display as a description on the Settings | Plugin page -->
     <description>
         <![CDATA[
-            Spec Driven Development using AI Agents
+            Spec Driven Development using AI Agents.<br><br>
+            Surfaces the SDD workflow (analyse → plan → implement → review → archive) as a
+            first-class IDE experience with a Pipeline progress view, Plan checklist, and
+            status bar indicator.
         ]]>
     </description>
+
     <change-notes>
         <![CDATA[
-      <ul>
-        <li><b>1.0.0</b> Initial Release.</li>
-      </ul>
-    ]]>
+            <ul>
+                <li><b>1.0.1</b> Phase 1 MVP: Pipeline tab, Plan tab, status bar indicator.</li>
+                <li><b>1.0.0</b> Initial Release.</li>
+            </ul>
+        ]]>
     </change-notes>
 
+    <extensions defaultExtensionNs="com.intellij">
+
+        <!-- Project-level service that reads feature.md / plan.md and owns SddState -->
+        <projectService serviceImplementation="dev.sivalabs.sdd.plugin.service.SddStateService"/>
+
+        <!-- Bottom tool window with Pipeline and Plan tabs -->
+        <toolWindow id="SDD"
+                    displayName="SDD"
+                    anchor="bottom"
+                    doNotActivateOnStart="true"
+                    factoryClass="dev.sivalabs.sdd.plugin.ui.SddToolWindowFactory"/>
+
+        <!-- Status bar widget (click to open the tool window) -->
+        <statusBarWidgetFactory id="SddStatusBarWidget"
+                                implementation="dev.sivalabs.sdd.plugin.statusbar.SddStatusBarWidgetFactory"
+                                order="after Position"/>
+
+    </extensions>
 </idea-plugin>
