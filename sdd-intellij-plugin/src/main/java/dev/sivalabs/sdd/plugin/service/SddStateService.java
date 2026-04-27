@@ -16,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -85,6 +84,7 @@ public final class SddStateService {
                             String path = e.getPath();
                             return path.endsWith("/feature.md")
                                     || path.endsWith("/plan.md")
+                                    || path.endsWith("/impl-summary.md")
                                     || path.endsWith("/review.md")
                                     || path.endsWith("/project.md")
                                     || path.contains("/specs-archive/");
@@ -100,36 +100,46 @@ public final class SddStateService {
         String basePath = project.getBasePath();
         if (basePath == null) return SddState.empty();
 
-        VirtualFile featureMd = LocalFileSystem.getInstance().findFileByPath(basePath + "/feature.md");
-        VirtualFile planMd    = LocalFileSystem.getInstance().findFileByPath(basePath + "/plan.md");
-        VirtualFile reviewMd  = LocalFileSystem.getInstance().findFileByPath(basePath + "/review.md");
         VirtualFile projectMd = LocalFileSystem.getInstance().findFileByPath(basePath + "/docs/project.md");
+        if (projectMd == null || !projectMd.exists()) {
+            return SddState.empty();
+        }
+        String projectMdContent = readFile(projectMd);
+        if (projectMdContent.isBlank()) {
+            return SddState.empty();
+        }
 
-        ProjectContext projectContext = (projectMd != null && projectMd.exists())
-                ? projectParser.parse(readFile(projectMd))
-                : null;
-
+        ProjectContext projectContext = projectParser.parse(projectMdContent);
         List<ArchivedFeature> archives = loadArchivedFeatures(basePath);
 
-        if (featureMd == null || !featureMd.exists()) {
-            return new SddState(null, WorkflowStage.INIT, Collections.emptyList(),
-                    null, projectContext, archives);
-        }
+        VirtualFile featureMd     = LocalFileSystem.getInstance().findFileByPath(basePath + "/feature.md");
+        VirtualFile planMd        = LocalFileSystem.getInstance().findFileByPath(basePath + "/plan.md");
+        VirtualFile implSummaryMd = LocalFileSystem.getInstance().findFileByPath(basePath + "/impl-summary.md");
+        VirtualFile reviewMd      = LocalFileSystem.getInstance().findFileByPath(basePath + "/review.md");
 
-        FeatureSpec featureSpec = featureParser.parse(readFile(featureMd));
+        boolean hasFeature     = featureMd     != null && featureMd.exists();
+        boolean hasPlan        = planMd        != null && planMd.exists();
+        boolean hasImplSummary = implSummaryMd != null && implSummaryMd.exists();
+        boolean hasReview      = reviewMd      != null && reviewMd.exists();
 
-        ReviewReport reviewReport = (reviewMd != null && reviewMd.exists())
-                ? reviewParser.parse(readFile(reviewMd))
-                : null;
+        WorkflowStage stage = determineStage(hasFeature, hasPlan, hasImplSummary, hasReview);
 
-        if (planMd == null || !planMd.exists()) {
-            return new SddState(featureSpec, WorkflowStage.ANALYSE, Collections.emptyList(),
-                    reviewReport, projectContext, archives);
-        }
+        FeatureSpec featureSpec   = hasFeature ? featureParser.parse(readFile(featureMd)) : null;
+        List<PlanStep> planSteps  = hasPlan    ? planParser.parse(readFile(planMd))       : Collections.emptyList();
+        ReviewReport reviewReport = hasReview  ? reviewParser.parse(readFile(reviewMd))   : null;
 
-        List<PlanStep> planSteps = planParser.parse(readFile(planMd));
-        WorkflowStage stage = determineStage(featureSpec.getAcceptanceCriteria(), planSteps);
         return new SddState(featureSpec, stage, planSteps, reviewReport, projectContext, archives);
+    }
+
+    // Stage is the first step whose output file does not yet exist.
+    // ARCHIVE is used as a sentinel when all four output files exist (all stages done).
+    private WorkflowStage determineStage(boolean hasFeature, boolean hasPlan,
+                                         boolean hasImplSummary, boolean hasReview) {
+        if (!hasFeature)     return WorkflowStage.ANALYSE;
+        if (!hasPlan)        return WorkflowStage.PLAN;
+        if (!hasImplSummary) return WorkflowStage.IMPLEMENT;
+        if (!hasReview)      return WorkflowStage.REVIEW;
+        return WorkflowStage.ARCHIVE; // all output files present — every pipeline stage is done
     }
 
     private List<ArchivedFeature> loadArchivedFeatures(String basePath) {
@@ -220,17 +230,6 @@ public final class SddStateService {
             if (line.strip().matches("^-\\s+\\[[ xX]]\\s+\\*{0,2}AC-\\d+.*")) count++;
         }
         return count;
-    }
-
-    private WorkflowStage determineStage(List<AcItem> acs, List<PlanStep> planSteps) {
-        if (!acs.isEmpty()) {
-            long checked = acs.stream().filter(AcItem::isChecked).count();
-            if (checked == acs.size()) return WorkflowStage.REVIEW;
-            if (checked > 0) return WorkflowStage.IMPLEMENT;
-        }
-        boolean anyProgress = planSteps.stream()
-                .anyMatch(s -> s.getStatus() == StepStatus.DONE || s.getStatus() == StepStatus.IN_PROGRESS);
-        return anyProgress ? WorkflowStage.IMPLEMENT : WorkflowStage.PLAN;
     }
 
     private String readFile(VirtualFile vf) {

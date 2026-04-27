@@ -10,25 +10,88 @@ import dev.sivalabs.sdd.plugin.model.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 
 public class PipelinePanel extends JBPanel<PipelinePanel> {
 
-    private static final WorkflowStage[] STAGES = WorkflowStage.values();
-    static final Color DONE_COLOR = new JBColor(new Color(0x4CAF50), new Color(0x4CAF50));
-    static final Color ACTIVE_COLOR = new JBColor(new Color(0x2196F3), new Color(0x42A5F5));
+    // Visible pipeline stages — Init and Archive are intentionally excluded.
+    private static final WorkflowStage[] PIPELINE_STAGES = {
+        WorkflowStage.ANALYSE, WorkflowStage.PLAN, WorkflowStage.IMPLEMENT, WorkflowStage.REVIEW
+    };
+
+    private static final String CARD_NO_INIT = "noInit";
+    private static final String CARD_PIPELINE = "pipeline";
+
+    static final Color DONE_COLOR    = new JBColor(new Color(0x4CAF50), new Color(0x4CAF50));
+    static final Color ACTIVE_COLOR  = new JBColor(new Color(0x2196F3), new Color(0x42A5F5));
     static final Color PENDING_COLOR = new JBColor(new Color(0x9E9E9E), new Color(0x757575));
 
-    private final JBLabel featureNameLabel;
-    private final StageProgressPanel stageProgressPanel;
-    private final JProgressBar acProgressBar;
-    private final JBLabel acProgressLabel;
-    private final JPanel stepsPanel;
+    private final CardLayout cardLayout;
+    private final JPanel cardContainer;
+
+    // Pipeline card components (initialised in buildPipelineCard)
+    private JBLabel featureNameLabel;
+    private StageProgressPanel stageProgressPanel;
+    private JProgressBar acProgressBar;
+    private JBLabel acProgressLabel;
+    private JPanel stepsPanel;
 
     public PipelinePanel(Project project, SddState state) {
         super(new BorderLayout());
         setBorder(JBUI.Borders.empty(8));
 
-        // ── top section ──────────────────────────────────────────────
+        cardLayout = new CardLayout();
+        cardContainer = new JPanel(cardLayout);
+        cardContainer.setOpaque(false);
+
+        cardContainer.add(buildNoInitCard(project), CARD_NO_INIT);
+        cardContainer.add(buildPipelineCard(), CARD_PIPELINE);
+
+        add(cardContainer, BorderLayout.CENTER);
+
+        updateState(state);
+    }
+
+    // ── no-init card ─────────────────────────────────────────────────────────
+
+    private JPanel buildNoInitCard(Project project) {
+        JPanel outer = new JPanel(new GridBagLayout());
+        outer.setOpaque(false);
+
+        JPanel inner = new JPanel();
+        inner.setOpaque(false);
+        inner.setLayout(new BoxLayout(inner, BoxLayout.Y_AXIS));
+
+        JBLabel label = new JBLabel("docs/project.md not found. Initialise SDD for this project first.");
+        label.setForeground(PENDING_COLOR);
+        label.setAlignmentX(CENTER_ALIGNMENT);
+
+        JButton button = new JButton("Run SDD Init");
+        button.setAlignmentX(CENTER_ALIGNMENT);
+        button.addActionListener(e -> {
+            StringSelection sel = new StringSelection("/sdd-init");
+            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(sel, sel);
+            button.setText("Copied!");
+            Timer timer = new Timer(2000, ev -> button.setText("Run SDD Init"));
+            timer.setRepeats(false);
+            timer.start();
+        });
+
+        inner.add(label);
+        inner.add(Box.createVerticalStrut(12));
+        inner.add(button);
+
+        outer.add(inner);
+        return outer;
+    }
+
+    // ── pipeline card ─────────────────────────────────────────────────────────
+
+    private JPanel buildPipelineCard() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setOpaque(false);
+
+        // top section
         JPanel top = new JPanel();
         top.setOpaque(false);
         top.setLayout(new BoxLayout(top, BoxLayout.Y_AXIS));
@@ -65,29 +128,42 @@ public class PipelinePanel extends JBPanel<PipelinePanel> {
         top.add(stepsHeader);
         top.add(Box.createVerticalStrut(4));
 
-        add(top, BorderLayout.NORTH);
+        panel.add(top, BorderLayout.NORTH);
 
-        // ── scrollable steps ─────────────────────────────────────────
+        // scrollable steps
         stepsPanel = new JPanel();
         stepsPanel.setOpaque(false);
         stepsPanel.setLayout(new BoxLayout(stepsPanel, BoxLayout.Y_AXIS));
         JBScrollPane scroll = new JBScrollPane(stepsPanel);
         scroll.setBorder(JBUI.Borders.empty());
-        add(scroll, BorderLayout.CENTER);
+        panel.add(scroll, BorderLayout.CENTER);
 
-        updateState(state);
+        return panel;
     }
 
+    // ── state updates ─────────────────────────────────────────────────────────
+
     public void updateState(SddState state) {
+        if (state.getCurrentStage() == WorkflowStage.INIT) {
+            cardLayout.show(cardContainer, CARD_NO_INIT);
+        } else {
+            cardLayout.show(cardContainer, CARD_PIPELINE);
+            updatePipelineCard(state);
+        }
+        revalidate();
+        repaint();
+    }
+
+    private void updatePipelineCard(SddState state) {
         if (state.getFeatureName() != null) {
             featureNameLabel.setText("Current Feature:  \"" + state.getFeatureName() + "\"");
         } else {
-            featureNameLabel.setText("No active feature — run /sdd-init to begin");
+            featureNameLabel.setText("No active feature — run /sdd-analyse to begin");
         }
 
         stageProgressPanel.setCurrentStage(state.getCurrentStage());
 
-        int total = state.getTotalAcCount();
+        int total   = state.getTotalAcCount();
         int checked = (int) state.getCheckedAcCount();
         if (total > 0) {
             acProgressBar.setMaximum(total);
@@ -100,8 +176,6 @@ public class PipelinePanel extends JBPanel<PipelinePanel> {
         }
 
         rebuildSteps(state);
-        revalidate();
-        repaint();
     }
 
     private void rebuildSteps(SddState state) {
@@ -175,11 +249,11 @@ public class PipelinePanel extends JBPanel<PipelinePanel> {
         };
     }
 
-    // ── Stage progress dots ───────────────────────────────────────────
+    // ── Stage progress dots ───────────────────────────────────────────────────
 
     private static class StageProgressPanel extends JPanel {
 
-        private WorkflowStage currentStage = WorkflowStage.INIT;
+        private WorkflowStage currentStage = WorkflowStage.ANALYSE;
 
         StageProgressPanel() {
             setOpaque(false);
@@ -201,12 +275,12 @@ public class PipelinePanel extends JBPanel<PipelinePanel> {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-            int n = STAGES.length;
+            int n = PIPELINE_STAGES.length;
             int w = getWidth();
-            int dotY = 12;
-            int labelY = 32;
+            int dotY    = 12;
+            int labelY  = 32;
             int statusY = 52;
-            int r = 6;
+            int r   = 6;
             int seg = w / (n + 1);
 
             int[] dotX = new int[n];
@@ -218,14 +292,14 @@ public class PipelinePanel extends JBPanel<PipelinePanel> {
             // connecting lines
             g2.setStroke(new BasicStroke(2f));
             for (int i = 0; i < n - 1; i++) {
-                boolean done = STAGES[i].ordinal() < currentStage.ordinal();
+                boolean done = PIPELINE_STAGES[i].ordinal() < currentStage.ordinal();
                 g2.setColor(done ? DONE_COLOR : PENDING_COLOR);
                 g2.drawLine(dotX[i] + r, dotY, dotX[i + 1] - r, dotY);
             }
 
             // dots + labels
             for (int i = 0; i < n; i++) {
-                int ord = STAGES[i].ordinal();
+                int ord = PIPELINE_STAGES[i].ordinal();
                 int cur = currentStage.ordinal();
                 Color c = ord < cur ? DONE_COLOR : ord == cur ? ACTIVE_COLOR : PENDING_COLOR;
 
@@ -234,7 +308,7 @@ public class PipelinePanel extends JBPanel<PipelinePanel> {
 
                 g2.setFont(baseFont);
                 FontMetrics fm = g2.getFontMetrics();
-                String label = STAGES[i].getDisplayName();
+                String label = PIPELINE_STAGES[i].getDisplayName();
                 g2.drawString(label, dotX[i] - fm.stringWidth(label) / 2, labelY);
 
                 if (ord < cur) {
