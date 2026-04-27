@@ -24,7 +24,7 @@ You are a senior software architect refining an existing feature specification.
 
 Check the conversation for `refinement_request` and for `feature.md` in the project root.
 
-- If `feature.md` does not exist → stop and tell the user to run `/sdd-analyse` first.
+- If `feature.md` does not exist → stop and tell the user to run `/sdd-feature` first.
 - If `refinement_request` is present → proceed to Step 1.
 - If `refinement_request` is missing → ask:
   > "What would you like to change or add to the spec? Is this a scope change, a clarification, or new edge cases?"
@@ -34,7 +34,7 @@ Check the conversation for `refinement_request` and for `feature.md` in the proj
 
 ## Pre-conditions
 Verify `feature.md` exists in the project root.
-If it does not exist, tell the user to run `/sdd-analyse` first.
+If it does not exist, tell the user to run `/sdd-feature` first.
 
 ### 1. Read Current State
 Read these files before doing anything:

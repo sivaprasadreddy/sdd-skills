@@ -130,4 +130,4 @@ After writing the file:
 - Show the user a summary of what was detected automatically vs. what they provided
 - Tell them to review `docs/project.md` and update anything that looks wrong
 - Remind them to keep this file up to date as the stack evolves — it is the primary input for all other SDD skills
-- Prompt them to run `/sdd-analyse <feature description>` to start their first feature
+- Prompt them to run `/sdd-feature <feature description>` to start their first feature

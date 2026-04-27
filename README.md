@@ -11,7 +11,7 @@ This prevents the common failure mode of AI-assisted development: jumping straig
 ## SDD Workflow
 
 ```
-/sdd-init  →  /sdd-analyse  →  /sdd-refine*  →  /sdd-plan  →  /sdd-implement  →  /sdd-review  →  /sdd-archive
+/sdd-init  →  /sdd-feature  →  /sdd-refine*  →  /sdd-plan  →  /sdd-implement  →  /sdd-review  →  /sdd-archive
 (once)                          (optional,
                                 repeatable)
 ```
@@ -36,14 +36,14 @@ At any point you can inspect or manually edit these files before continuing.
 
 This SDD workflow is useful across different working contexts. The workflow covers **feature development only** — from idea to reviewed, archived code. Deployment is out of scope.
 
-**Solo developers and indie hackers** working on SaaS products typically own both the requirements and the code. They can use the full pipeline end-to-end: `/sdd-analyse` to turn an idea into a spec, `/sdd-plan` to produce an implementation plan, and `/sdd-implement` through `/sdd-archive` to ship and document it.
+**Solo developers and indie hackers** working on SaaS products typically own both the requirements and the code. They can use the full pipeline end-to-end: `/sdd-feature` to turn an idea into a spec, `/sdd-plan` to produce an implementation plan, and `/sdd-implement` through `/sdd-archive` to ship and document it.
 
-**Enterprise teams** usually separate requirements from implementation. A Business Analyst talking to stakeholders can use `/sdd-analyse` and `/sdd-refine` to produce a structured, unambiguous `feature.md` spec — then hand it to the development team, who pick up from `/sdd-plan` onwards.
+**Enterprise teams** usually separate requirements from implementation. A Business Analyst talking to stakeholders can use `/sdd-feature` and `/sdd-refine` to produce a structured, unambiguous `feature.md` spec — then hand it to the development team, who pick up from `/sdd-plan` onwards.
 
 In both cases, the structured spec in `feature.md` is the handoff artifact. The earlier in the workflow you invest in it, the less rework happens downstream.
 
 **NOTE:** 
-**A spec is not a complete, final contract.** It captures what is known at the time it is written. Requirements evolve — new edge cases surface during implementation, stakeholders refine their thinking, and constraints change. When that happens, use `/sdd-refine` to update the current spec, or start a new `/sdd-analyse` cycle for the follow-on work. The goal is not a perfect upfront specification; it is a shared, written understanding that keeps the team aligned as understanding grows.
+**A spec is not a complete, final contract.** It captures what is known at the time it is written. Requirements evolve — new edge cases surface during implementation, stakeholders refine their thinking, and constraints change. When that happens, use `/sdd-refine` to update the current spec, or start a new `/sdd-feature` cycle for the follow-on work. The goal is not a perfect upfront specification; it is a shared, written understanding that keeps the team aligned as understanding grows.
 
 ---
 
@@ -86,7 +86,7 @@ AI Agent scans your build files and source tree, asks for your project name, mis
 ### Step 1 — Analyse the feature
 
 ```
-/sdd-analyse Add JWT-based authentication with refresh token support
+/sdd-feature Add JWT-based authentication with refresh token support
 ```
 
 AI Agent reads `docs/project.md`, asks up to 5 clarifying questions (token expiry times, refresh strategy, endpoints to protect, etc.), then writes `feature.md` with structured user stories, functional requirements (FR-01, FR-02, …), acceptance criteria (AC-01, AC-02, …), and out-of-scope boundaries. Review the spec before continuing.
@@ -181,14 +181,14 @@ AI Agent runs analyse → plan → implement → review → archive automaticall
 
 ---
 
-### `/sdd-analyse` — Feature Analysis
+### `/sdd-feature` — Feature Analysis
 
 **Purpose:** Turns a raw feature idea into a structured, unambiguous `feature.md` specification.
 
 **Usage:**
 ```
-/sdd-analyse Add JWT-based authentication with refresh token support
-/sdd-analyse                          # prompts interactively if no argument given
+/sdd-feature Add JWT-based authentication with refresh token support
+/sdd-feature                          # prompts interactively if no argument given
 ```
 
 **What it does:**
@@ -225,7 +225,7 @@ AI Agent runs analyse → plan → implement → review → archive automaticall
 
 **Input:** Change description as argument (or interactive)
 **Output:** Updated `feature.md` with revision history entry; impact assessment on `plan.md` if applicable
-**Requires:** `feature.md` (run `/sdd-analyse` first if it doesn't exist)
+**Requires:** `feature.md` (run `/sdd-feature` first if it doesn't exist)
 
 ---
 
@@ -396,7 +396,7 @@ your-project/
 │   └── skills/
 │       ├── sdd-init/
 │       │   └── SKILL.md
-│       ├── sdd-analyse/
+│       ├── sdd-feature/
 │       │   └── SKILL.md
 │       ├── sdd-plan/
 │       │   └── SKILL.md
@@ -430,7 +430,7 @@ Read `docs/project.md` for mission, tech stack, and architecture before making a
 ## SDD Workflow
 This project uses Spec Driven Development. The workflow is:
 1. `/sdd-init` → analyses the codebase and produces `docs/project.md` (run once per project)
-2. `/sdd-analyse <feature description>` → produces `feature.md`
+2. `/sdd-feature <feature description>` → produces `feature.md`
 3. `/sdd-refine <change>` → updates `feature.md` (optional, repeatable)
 4. `/sdd-plan` → reads `feature.md`, produces `plan.md`
 5. `/sdd-implement` → reads `plan.md`, implements and verifies
@@ -484,7 +484,7 @@ The skills rely heavily on this file. Include at minimum:
 
 **Start every session with context.** If you are picking up work mid-feature, tell AI Agent: *"I'm continuing work on the JWT authentication feature. `feature.md` and `plan.md` are in the root."* AI Agent does not retain memory between sessions.
 
-**Refine before you plan.** If you think of new requirements after running `/sdd-analyse` but before `/sdd-plan`, use `/sdd-refine` — it is cheaper to update a spec than to re-plan or re-implement.
+**Refine before you plan.** If you think of new requirements after running `/sdd-feature` but before `/sdd-plan`, use `/sdd-refine` — it is cheaper to update a spec than to re-plan or re-implement.
 
 **Re-plan after significant refinements.** If `/sdd-refine` reports that multiple plan steps are invalidated, run `/sdd-plan` again rather than manually patching `plan.md`.
 

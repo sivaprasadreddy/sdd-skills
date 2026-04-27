@@ -38,7 +38,7 @@ Check the conversation for `feature_description` and for `docs/project.md`.
 
 ## Phase 1 — Analyse
 
-Follow the full `sdd-analyse` process:
+Follow the full `sdd-feature` process:
 
 1. Read `docs/project.md`.
 2. Analyse the request: **`feature_description`** (collected in Step 0).

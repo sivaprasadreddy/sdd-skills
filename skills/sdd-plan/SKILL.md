@@ -3,7 +3,7 @@ name: sdd-plan
 description: >
   SDD step 3. Read feature.md and produce a detailed implementation plan.md
   tailored to the project's tech stack and architecture.
-  Use after /sdd-analyse has produced feature.md.
+  Use after /sdd-feature has produced feature.md.
 ---
 
 # SDD: Implementation Planning
@@ -12,7 +12,7 @@ You are acting as a senior software engineer creating a precise, actionable impl
 
 ## Pre-conditions
 Verify both files exist before proceeding:
-- `feature.md` — the feature spec (if missing, tell the user to run `/sdd-analyse` first)
+- `feature.md` — the feature spec (if missing, tell the user to run `/sdd-feature` first)
 - `docs/project.md` — project context
 
 ## Process

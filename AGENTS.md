@@ -11,7 +11,7 @@ The skills live in `skills/<skill-name>/SKILL.md`. Each SKILL.md is a markdown p
 ## SDD Workflow
 
 ```
-/sdd-init  →  /sdd-analyse  →  /sdd-refine*  →  /sdd-plan  →  /sdd-implement  →  /sdd-review  →  /sdd-archive
+/sdd-init  →  /sdd-feature  →  /sdd-refine*  →  /sdd-plan  →  /sdd-implement  →  /sdd-review  →  /sdd-archive
 (once)                          (optional,
                                  repeatable)
 ```
@@ -19,7 +19,7 @@ The skills live in `skills/<skill-name>/SKILL.md`. Each SKILL.md is a markdown p
 | Skill            | Reads                                      | Produces                            |
 |------------------|--------------------------------------------|-------------------------------------|
 | `/sdd-init`      | Project codebase                           | `docs/project.md`                   |
-| `/sdd-analyse`   | `docs/project.md`                          | `feature.md`                        |
+| `/sdd-feature`   | `docs/project.md`                          | `feature.md`                        |
 | `/sdd-refine`    | `feature.md`, `docs/project.md`, `plan.md` | Updated `feature.md`                |
 | `/sdd-plan`      | `feature.md`, `docs/project.md`            | `plan.md`                           |
 | `/sdd-implement` | `plan.md`, `feature.md`, `docs/project.md` | Implemented code, `impl-summary.md` |
@@ -73,6 +73,6 @@ docs/specs-archive/<feature-name>/
 ├── feature.md
 ├── plan.md
 ├── review.md         ← present if /sdd-review was used
-├── impl-summary.md   ← present if /sdd-implement or /sdd-tdd-implement was used
+├── impl-summary.md   ← present if /sdd-implement was used
 └── README.md
 ```

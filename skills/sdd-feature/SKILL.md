@@ -1,5 +1,5 @@
 ---
-name: sdd-analyse
+name: sdd-feature
 description: >
   SDD step 1. Analyse a feature request and produce a detailed feature.md spec.
   Use when the user describes a new feature they want to build.
