@@ -45,14 +45,14 @@ Review the path or file set resolved in Step 0. Focus on changed/added files; no
 
 ## Review Dimensions
 
-Work through each dimension below in order. For each finding, use this format:
+Work through each dimension below in order. For each finding, add one row to the appropriate severity table (see Output Format):
 
 ```
-**[SEVERITY]** `path/to/File:line-range`
-_Category_: <category name>
-Problem: <what is wrong and why it matters>
-Suggestion: <concrete fix, preferably with a code snippet>
+| [ ] | `path/to/File.java:line` | <category> | <one sentence: what is wrong and why it matters> | <one sentence: concrete fix> |
 ```
+
+- First column `[ ]` is the status checkbox — change to `[x]` once the finding is resolved.
+- Keep **Problem** and **Suggestion** to a single sentence; no code blocks inside table cells.
 
 Severity levels:
 - 🔴 **CRITICAL** — Must fix before merging (security holes, data loss risk, broken ACs)
@@ -175,16 +175,25 @@ Write the review to `review.md` in the project root using this structure:
 ## Findings
 
 ### 🔴 Critical
-<findings or "None">
+
+| Done | Location | Category | Problem | Suggestion |
+|------|----------|----------|---------|------------|
+| [ ] | `src/service/AuthService.java:42` | Null Safety | `user` may be null; NPE at runtime | Add null guard before line 42 |
 
 ### 🟠 Major
-<findings or "None">
+
+| Done | Location | Category | Problem | Suggestion |
+|------|----------|----------|---------|------------|
 
 ### 🟡 Minor
-<findings or "None">
+
+| Done | Location | Category | Problem | Suggestion |
+|------|----------|----------|---------|------------|
 
 ### 🔵 Info / Suggestions
-<findings or "None">
+
+| Done | Location | Category | Problem | Suggestion |
+|------|----------|----------|---------|------------|
 
 ## Acceptance Criteria Coverage
 | AC         | Test               | Status          |
