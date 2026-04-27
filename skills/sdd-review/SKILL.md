@@ -18,7 +18,7 @@ Every finding must reference the exact file and line range.
 
 | Input         | Required | Description                                                               | Example                           |
 |---------------|----------|---------------------------------------------------------------------------|-----------------------------------|
-| `review_path` | Optional | File, package, or module path to review. Defaults to full git diff scope. | `src/main/java/com/example/auth/` |
+| `review_path` | Optional | File, package, or module path to review. Defaults to full git diff scope. | `src/auth/` |
 
 ## Steps
 
@@ -48,7 +48,7 @@ Review the path or file set resolved in Step 0. Focus on changed/added files; no
 Work through each dimension below in order. For each finding, use this format:
 
 ```
-**[SEVERITY]** `path/to/File.java:line-range`
+**[SEVERITY]** `path/to/File:line-range`
 _Category_: <category name>
 Problem: <what is wrong and why it matters>
 Suggestion: <concrete fix, preferably with a code snippet>
@@ -73,42 +73,40 @@ If `feature.md` is present, go through every AC:
 
 ### Dimension 2: Language & Framework Best Practices
 
-#### Java
-- Uses modern Java features appropriately (records, sealed classes, pattern matching, text blocks)
-- No raw types, unchecked casts, or unnecessary boxing/unboxing
-- Proper use of `Optional` — not used as a field type or method parameter
-- Streams used correctly — no side effects inside `map()`, no unnecessary `collect(toList())` in Java 16+
-- Immutability preferred where appropriate
-- No swallowed exceptions (`catch (Exception e) {}`)
-- No `System.out.println` or `e.printStackTrace()` — proper logging only
+Review against the conventions and idiomatic patterns for the tech stack declared in `docs/project.md`. 
+Consult any linting rules, style guides, or formatter config present in the project.
 
-#### Spring Boot
-- No field injection (`@Autowired` on fields) — constructor injection only
-- `@Transactional` placed on service layer, not controller or repository
-- No business logic in controllers — controllers only delegate
-- Configuration via `@ConfigurationProperties`, not scattered `@Value` annotations
-- Proper HTTP status codes on REST endpoints
-- Exception handling via `@RestControllerAdvice`, not try/catch in controllers
-- No `@SpringBootTest` where a slice test (`@WebMvcTest`, `@DataJpaTest`) would suffice
-- Entities not exposed directly as API response objects — DTOs/records used
+#### Language
+- Code is idiomatic for the language in use — modern language features used appropriately
+- No antipatterns common to this language (resource leaks, unsafe type coercions, ignored errors, etc.)
+- Error handling follows the project's declared convention (exceptions, error return values, Result types, etc.)
+- No debug output left in production code (`print`, `console.log`, etc.) — structured logging only
+- Immutability or value semantics preferred where the language supports it
 
-#### Spring Data JPA
-- No `findAll()` without pagination on potentially large datasets
-- N+1 query risk: check `@OneToMany`/`@ManyToMany` — `FetchType.LAZY` used appropriately
-- Named queries or `@Query` with JPQL preferred over native SQL unless necessary
-- Avoid `Optional.get()` without `isPresent()` check on repository results
+#### Framework
+- Follows the framework's recommended layer responsibilities — no business logic in the presentation/controller layer
+- Configuration is centralised per the framework's conventions — no scattered inline config values
+- Dependency injection or service wiring uses the framework's standard mechanism
+- HTTP status codes are semantically correct for the outcome
+- Error/exception handling is centralised (middleware, handler, filter) not duplicated per endpoint
+- Tests use the narrowest test scope available — prefer unit or slice tests over full-stack tests where sufficient
+
+#### Data Access
+- No unbounded queries on potentially large datasets — pagination applied where appropriate
+- N+1 query risks identified and addressed (eager loading, batching, or explicit joins)
+- Queries use the framework's safe parameterisation mechanism — no string concatenation in queries
+- Absence of a record is handled explicitly before use (null check, empty-optional guard, etc.)
 
 ---
 
 ### Dimension 3: Security
 
-- **Injection**: No string concatenation in JPQL/SQL queries — parameterised queries only
-- **Authentication & Authorisation**: Sensitive endpoints have `@PreAuthorize` or equivalent;
-  no security decisions made purely on client-supplied data without server-side validation
-- **Input Validation**: All request bodies and parameters validated with Bean Validation (`@Valid`, `@NotNull`, `@Size`, etc.)
+- **Injection**: No string concatenation in queries (SQL, NoSQL, etc.) — parameterised queries only
+- **Authentication & Authorisation**: Sensitive endpoints are protected; no security decisions based solely on client-supplied data without server-side validation
+- **Input Validation**: All request bodies and parameters are validated before use
 - **Sensitive Data Exposure**: No passwords, tokens, PII, or secrets logged or returned in API responses
-- **Mass Assignment**: DTOs used to prevent binding arbitrary fields to JPA entities
-- **Dependency Risk**: Flag any new dependency added that is not in `docs/project.md` approved stack
+- **Mass Assignment**: Request input is not bound directly to persistent models without explicit field filtering
+- **Dependency Risk**: Flag any new dependency not in `docs/project.md` approved stack
 - **CORS / CSRF**: If new endpoints are added, confirm CORS config is not overly permissive
 - **Error Messages**: Stack traces or internal details not leaked in error responses
 
@@ -126,7 +124,7 @@ If `feature.md` is present, go through every AC:
 ### Dimension 5: Design & Architecture
 
 - Code respects the layering in `docs/project.md` (e.g., no domain logic leaking into controllers,
-  no JPA in domain layer for Hexagonal Architecture)
+  no data-access or infrastructure code in the domain layer for Hexagonal/Clean Architecture)
 - Classes follow Single Responsibility — flag classes that do too many things
 - No inappropriate `static` methods carrying state
 - Proper use of interfaces and abstractions — not over-engineered, but not skipping meaningful abstractions either
@@ -149,7 +147,7 @@ If `feature.md` is present, go through every AC:
 - Test names clearly describe the scenario (`should_returnError_when_emailAlreadyExists`)
 - No logic in tests (`if`, `for` loops) — each test is a single, clear scenario
 - Mocks used only at architectural boundaries — no mocking of classes owned by the same module
-- No `Thread.sleep()` in tests — `Awaitility` or proper async handling used
+- No arbitrary sleeps in tests — use proper async/polling utilities for asynchronous assertions
 - Test data is minimal and focused — no bloated setup that obscures what's being tested
 - Edge cases covered: null inputs, empty collections, boundary values
 
@@ -160,7 +158,7 @@ If `feature.md` is present, go through every AC:
 - New service methods and key business events have appropriate log statements at correct levels
   (`DEBUG` for diagnostic detail, `INFO` for business events, `WARN` for recoverable issues, `ERROR` for failures)
 - No sensitive data in log messages
-- If the project uses metrics (Micrometer/Actuator), new significant operations are instrumented
+- If the project uses a metrics library, new significant operations are instrumented
 
 ---
 

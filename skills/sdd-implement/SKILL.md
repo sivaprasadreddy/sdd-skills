@@ -32,14 +32,14 @@ Work through each step in `plan.md` sequentially. For each step:
 ### 3. Code Quality Rules
 - Follow the conventions already present in the codebase (read existing similar files first)
 - Write clean, idiomatic code for the tech stack
-- Add Javadoc to public APIs
+- Add documentation to public APIs
 - Do not introduce new dependencies without flagging it to the user
 
 ### 4. Run Verification After Each Layer
-After completing each step, run the relevant build/test command:
+After completing each step, run the relevant build/test command from `docs/project.md`:
 - After schema changes: check migration applies cleanly
-- After each new class: compile (`mvn compile` or `./gradlew compileJava`)
-- After tests are written: run them (`mvn test` or `./gradlew test`)
+- After each new source file: compile (use the project's compile command)
+- After tests are written: run them (use the project's test command)
 - Fix any failures before proceeding to the next step
 
 ### 5. Final Acceptance Criteria Check
