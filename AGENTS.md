@@ -72,6 +72,7 @@ After `/sdd-archive`, the consuming project will have:
 docs/specs-archive/<feature-name>/
 ├── feature.md
 ├── plan.md
+├── review.md         ← present if /sdd-review was used
 ├── impl-summary.md   ← present if /sdd-implement or /sdd-tdd-implement was used
 └── README.md
 ```

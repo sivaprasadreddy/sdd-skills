@@ -140,7 +140,7 @@ AI Agent reviews all files changed in this branch across 8 dimensions (AC covera
 /sdd-archive jwt-authentication (explicit feature name)
 ```
 
-AI Agent verifies all AC checkboxes are ticked, moves `feature.md` and `plan.md` into `docs/specs-archive/jwt-authentication/`, and creates a brief `README.md` there summarising what was built and any notable decisions. Commit the archive directory — it is your project's institutional memory.
+AI Agent verifies all AC checkboxes are ticked, moves `feature.md`, `plan.md`, `impl-summary.md`, `review.md` into `docs/specs-archive/jwt-authentication/`, and creates a brief `README.md` there summarising what was built and any notable decisions. Commit the archive directory — it is your project's institutional memory.
 
 ---
 
@@ -331,7 +331,7 @@ AI Agent runs analyse → plan → implement → review → archive automaticall
 
 ### `/sdd-archive` — Archive
 
-**Purpose:** Moves `feature.md`, `plan.md`, and `impl-summary.md` into a permanent `docs/specs-archive/<feature-name>/` directory once the feature is complete and reviewed, keeping the project root clean.
+**Purpose:** Moves `feature.md`, `plan.md`, `impl-summary.md`, `review.md` into a permanent `docs/specs-archive/<feature-name>/` directory once the feature is complete and reviewed, keeping the project root clean.
 
 **Usage:**
 ```
@@ -344,7 +344,7 @@ AI Agent runs analyse → plan → implement → review → archive automaticall
 2. Checks that all AC checkboxes in `feature.md` are ticked — warns you and asks for confirmation if any are unchecked
 3. Updates `docs/project.md` with: the new feature entry, any architectural decisions made, new API endpoints, and new environment/configuration keys introduced by the feature
 4. Shows a summary of every proposed change to `project.md` and asks for your confirmation before writing
-5. Moves `feature.md`, `plan.md`, and `impl-summary.md` (if present) into `docs/specs-archive/<feature-name>/`
+5. Moves `feature.md`, `plan.md`, `impl-summary.md`, `review.md` (if present) into `docs/specs-archive/<feature-name>/`
 6. Creates `docs/specs-archive/<feature-name>/README.md` with a brief summary of what was built, key files, and notable decisions
 7. Reminds you to commit the `docs/specs-archive/<feature-name>/` directory and `docs/project.md` to version control
 
@@ -435,7 +435,7 @@ This project uses Spec Driven Development. The workflow is:
 4. `/sdd-plan` → reads `feature.md`, produces `plan.md`
 5. `/sdd-implement` → reads `plan.md`, implements and verifies
 6. `/sdd-review` → reviews code quality, security, and AC coverage
-7. `/sdd-archive` → archives `feature.md`, `plan.md`, and `impl-summary.md` to `docs/specs-archive/<feature-name>/`
+7. `/sdd-archive` → archives `feature.md`, `plan.md`, `impl-summary.md`, `review.md` to `docs/specs-archive/<feature-name>/`
 
 Never skip steps. Always read `docs/project.md` before planning or implementing.
 ```
