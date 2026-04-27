@@ -3,6 +3,7 @@ package dev.sivalabs.sdd.plugin.ui;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
@@ -34,6 +35,7 @@ public class ReviewPanel extends JBPanel<ReviewPanel> {
     private final JBLabel lastRunLabel = new JBLabel();
     private final JPanel findingsContainer = new JPanel();
     private final JPanel acContainer = new JPanel();
+    private JButton runBtn;
 
     public ReviewPanel(Project project, SddState state) {
         super(new BorderLayout());
@@ -51,14 +53,14 @@ public class ReviewPanel extends JBPanel<ReviewPanel> {
 
         JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 0));
         buttons.setOpaque(false);
-        JButton runBtn = new JButton("Run Review");
+        runBtn = new JButton("Run Review");
         runBtn.setFocusable(false);
         runBtn.addActionListener(e -> triggerReview());
-        JButton exportBtn = new JButton("Export Report");
-        exportBtn.setFocusable(false);
-        exportBtn.addActionListener(e -> openReviewMd());
+        JButton openReportBtn = new JButton("Open Report");
+        openReportBtn.setFocusable(false);
+        openReportBtn.addActionListener(e -> openReviewMd());
         buttons.add(runBtn);
-        buttons.add(exportBtn);
+        buttons.add(openReportBtn);
         toolbar.add(buttons, BorderLayout.EAST);
 
         // ── verdict + last-run rows ──────────────────────────────────
@@ -224,10 +226,12 @@ public class ReviewPanel extends JBPanel<ReviewPanel> {
     // ── actions ───────────────────────────────────────────────────────
 
     private void triggerReview() {
-        String cmd = "/sdd-review";
-        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(cmd), null);
-        Notifications.Bus.notify(new Notification("SDD", "Review command copied",
-                "Paste  <tt>/sdd-review</tt>  into your AI agent chat.", NotificationType.INFORMATION), project);
+        StringSelection sel = new StringSelection("/sdd-review");
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(sel, sel);
+        runBtn.setText("Copied!");
+        Timer timer = new Timer(2000, ev -> runBtn.setText("Run Review"));
+        timer.setRepeats(false);
+        timer.start();
     }
 
     private void openReviewMd() {
@@ -235,7 +239,7 @@ public class ReviewPanel extends JBPanel<ReviewPanel> {
         if (base == null) return;
         VirtualFile vf = LocalFileSystem.getInstance().findFileByPath(base + "/review.md");
         if (vf != null) {
-            com.intellij.openapi.fileEditor.FileEditorManager.getInstance(project).openFile(vf, true);
+            FileEditorManager.getInstance(project).openFile(vf, true);
         } else {
             Notifications.Bus.notify(new Notification("SDD", "No review.md",
                     "Run /sdd-review to generate a review report.", NotificationType.WARNING), project);
