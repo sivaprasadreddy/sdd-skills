@@ -22,6 +22,7 @@ argument-hint: <feature-name> (optional, derived from feature.md if omitted)
 Check the conversation for `feature_name` and for `feature.md` / `plan.md` in the project root.
 
 - If `feature.md` or `plan.md` do not exist → stop and tell the user both files are required.
+- Note whether `review.md` exists in the project root — it will be archived if present.
 - Note whether `impl-summary.md` exists in the project root — it will be archived if present.
 - If `feature_name` is provided → use it as the archive directory name (kebab-case).
 - If `feature_name` is missing → read `feature.md` and derive it from the `# Feature:` heading,
@@ -96,8 +97,7 @@ and document the new endpoints:
 Only add endpoints that are new or changed. Preserve existing entries.
 
 #### 3d. Environment / Configuration
-If the feature introduced new environment variables, configuration keys, or
-`application.properties`/`application.yml` entries, add them to an
+If the feature introduced new environment variables, configuration keys, add them to an
 `## Environment & Configuration` section:
 
 ```markdown
@@ -142,6 +142,8 @@ ARCHIVE_DIR="docs/specs-archive/$(date +"%Y%m%d%H%M")-<feature-name>"
 mkdir -p "$ARCHIVE_DIR"
 mv feature.md "$ARCHIVE_DIR/feature.md"
 mv plan.md "$ARCHIVE_DIR/plan.md"
+# move review.md only if it exists
+[ -f review.md ] && mv review.md "$ARCHIVE_DIR/review.md"
 # move impl-summary.md only if it exists
 [ -f impl-summary.md ] && mv impl-summary.md "$ARCHIVE_DIR/impl-summary.md"
 ```
@@ -159,6 +161,6 @@ Implemented on: <date>
 
 ### 7. Confirm
 Report the final summary to the user:
-- Files archived to `docs/specs-archive/<yyyymmddHHMM>-<feature-name>/` (`feature.md`, `plan.md`, and `impl-summary.md` if it existed)
+- Files archived to `docs/specs-archive/<yyyymmddHHMM>-<feature-name>/` (`feature.md`, `plan.md`, `review.md`, and `impl-summary.md` if it existed)
 - Sections updated in `docs/project.md`
 - Remind them to commit both `docs/specs-archive/<yyyymmddHHMM>-<feature-name>/` and `docs/project.md` to version control
