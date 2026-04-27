@@ -190,14 +190,24 @@ Run the full test suite after each concern is added.
 
 Once all ACs are complete, do a final sweep:
 
+**5a. File existence check**
+
+Parse `plan.md` and collect every file path listed under "Files to Create" (or equivalent sections). 
+For each path, check that the file exists on disk. Report any missing files and do not proceed until they are present.
+If all files exist, then mark all steps in plan.md as completed.
+
+**5b. Per-AC test verification**
+
 For each AC in `feature.md`:
 - Identify the primary test covering it
 - Run that test in isolation to confirm it still passes
 - Check the AC checkbox in `feature.md`: change `- [ ]` to `- [x]`
 
+**5c. Full suite**
+
 Run the complete test suite one final time using the project's test command.
 
-Do NOT declare the feature done if any AC is unchecked or any test is failing.
+Do NOT declare the feature done if any planned file is missing, any AC is unchecked, or any test is failing.
 
 ---
 

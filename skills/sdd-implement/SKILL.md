@@ -46,7 +46,7 @@ After completing each step, run the relevant build/test command from `docs/proje
 Once all steps are complete, go through every acceptance criterion in `feature.md`:
 - For each AC, identify and run the test that covers it
 - Report pass/fail for each AC
-- Do NOT declare the feature done if any AC is failing
+- Do NOT update acceptance criterion status in `feature.md`
 
 ### 6. Summary Report
 Write a file named `impl-summary.md` in the project root with the following content:
