@@ -16,15 +16,17 @@ public class SddToolWindowPanel extends JPanel {
         SddStateService stateService = SddStateService.getInstance(project);
 
         PipelinePanel pipelinePanel = new PipelinePanel(project, stateService.getState());
-        SpecPanel specPanel = new SpecPanel(project, stateService.getState());
-        PlanPanel planPanel = new PlanPanel(project, stateService.getState());
-        ReviewPanel reviewPanel = new ReviewPanel(project, stateService.getState());
+        SpecPanel     specPanel     = new SpecPanel(project, stateService.getState());
+        PlanPanel     planPanel     = new PlanPanel(project, stateService.getState());
+        ReviewPanel   reviewPanel   = new ReviewPanel(project, stateService.getState());
+        HistoryPanel  historyPanel  = new HistoryPanel(project, stateService.getState());
 
         JBTabbedPane tabbedPane = new JBTabbedPane();
         tabbedPane.addTab("Pipeline", pipelinePanel);
-        tabbedPane.addTab("Spec", specPanel);
-        tabbedPane.addTab("Plan", planPanel);
-        tabbedPane.addTab("Review", reviewPanel);
+        tabbedPane.addTab("Spec",     specPanel);
+        tabbedPane.addTab("Plan",     planPanel);
+        tabbedPane.addTab("Review",   reviewPanel);
+        tabbedPane.addTab("History",  historyPanel);
         add(tabbedPane, BorderLayout.CENTER);
 
         project.getMessageBus().connect().subscribe(SddStateTopic.TOPIC, state ->
@@ -33,6 +35,7 @@ public class SddToolWindowPanel extends JPanel {
                     specPanel.updateState(state);
                     planPanel.updateState(state);
                     reviewPanel.updateState(state);
+                    historyPanel.updateState(state);
                 })
         );
     }

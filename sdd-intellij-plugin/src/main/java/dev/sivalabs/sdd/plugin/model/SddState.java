@@ -8,29 +8,40 @@ public class SddState {
     private final WorkflowStage currentStage;
     private final List<PlanStep> planSteps;
     private final ReviewReport reviewReport;
+    private final ProjectContext projectContext;
+    private final List<ArchivedFeature> archivedFeatures;
 
     public static SddState empty() {
-        return new SddState(null, WorkflowStage.INIT, Collections.emptyList(), null);
+        return new SddState(null, WorkflowStage.INIT, Collections.emptyList(), null, null, Collections.emptyList());
     }
 
     public SddState(FeatureSpec featureSpec, WorkflowStage currentStage, List<PlanStep> planSteps) {
-        this(featureSpec, currentStage, planSteps, null);
+        this(featureSpec, currentStage, planSteps, null, null, Collections.emptyList());
     }
 
     public SddState(FeatureSpec featureSpec, WorkflowStage currentStage, List<PlanStep> planSteps,
                     ReviewReport reviewReport) {
+        this(featureSpec, currentStage, planSteps, reviewReport, null, Collections.emptyList());
+    }
+
+    public SddState(FeatureSpec featureSpec, WorkflowStage currentStage, List<PlanStep> planSteps,
+                    ReviewReport reviewReport, ProjectContext projectContext,
+                    List<ArchivedFeature> archivedFeatures) {
         this.featureSpec = featureSpec;
         this.currentStage = currentStage;
         this.planSteps = planSteps;
         this.reviewReport = reviewReport;
+        this.projectContext = projectContext;
+        this.archivedFeatures = archivedFeatures != null ? archivedFeatures : Collections.emptyList();
     }
 
-    public FeatureSpec getFeatureSpec() { return featureSpec; }
-    public WorkflowStage getCurrentStage() { return currentStage; }
-    public List<PlanStep> getPlanSteps() { return planSteps; }
-    public ReviewReport getReviewReport() { return reviewReport; }
+    public FeatureSpec getFeatureSpec()               { return featureSpec; }
+    public WorkflowStage getCurrentStage()            { return currentStage; }
+    public List<PlanStep> getPlanSteps()              { return planSteps; }
+    public ReviewReport getReviewReport()             { return reviewReport; }
+    public ProjectContext getProjectContext()          { return projectContext; }
+    public List<ArchivedFeature> getArchivedFeatures(){ return archivedFeatures; }
 
-    // Convenience delegates — keep the existing API intact for Pipeline/Plan panels
     public String getFeatureName() {
         return featureSpec != null ? featureSpec.getTitle() : null;
     }
