@@ -4,13 +4,15 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
-import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.ui.JBUI;
 import dev.sivalabs.sdd.plugin.model.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.function.Consumer;
 
 public class PipelinePanel extends JBPanel<PipelinePanel> {
 
@@ -28,16 +30,15 @@ public class PipelinePanel extends JBPanel<PipelinePanel> {
 
     private final CardLayout cardLayout;
     private final JPanel cardContainer;
+    private final Consumer<WorkflowStage> stageClickListener;
 
     // Pipeline card components (initialised in buildPipelineCard)
     private JBLabel featureNameLabel;
     private StageProgressPanel stageProgressPanel;
-    private JProgressBar acProgressBar;
-    private JBLabel acProgressLabel;
-    private JPanel stepsPanel;
 
-    public PipelinePanel(Project project, SddState state) {
+    public PipelinePanel(Project project, SddState state, Consumer<WorkflowStage> stageClickListener) {
         super(new BorderLayout());
+        this.stageClickListener = stageClickListener;
         setBorder(JBUI.Borders.empty(8));
 
         cardLayout = new CardLayout();
@@ -91,7 +92,6 @@ public class PipelinePanel extends JBPanel<PipelinePanel> {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setOpaque(false);
 
-        // top section
         JPanel top = new JPanel();
         top.setOpaque(false);
         top.setLayout(new BoxLayout(top, BoxLayout.Y_AXIS));
@@ -102,42 +102,11 @@ public class PipelinePanel extends JBPanel<PipelinePanel> {
         top.add(featureNameLabel);
         top.add(Box.createVerticalStrut(10));
 
-        stageProgressPanel = new StageProgressPanel();
+        stageProgressPanel = new StageProgressPanel(stageClickListener);
         stageProgressPanel.setAlignmentX(LEFT_ALIGNMENT);
         top.add(stageProgressPanel);
-        top.add(Box.createVerticalStrut(10));
-
-        // AC progress bar row
-        JPanel acRow = new JPanel(new BorderLayout(6, 0));
-        acRow.setOpaque(false);
-        acRow.setAlignmentX(LEFT_ALIGNMENT);
-        acRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 22));
-        JBLabel acHeader = new JBLabel("Progress  ");
-        acProgressBar = new JProgressBar(0, 1);
-        acProgressBar.setForeground(ACTIVE_COLOR);
-        acProgressLabel = new JBLabel("0 / 0 ACs");
-        acRow.add(acHeader, BorderLayout.WEST);
-        acRow.add(acProgressBar, BorderLayout.CENTER);
-        acRow.add(acProgressLabel, BorderLayout.EAST);
-        top.add(acRow);
-        top.add(Box.createVerticalStrut(10));
-
-        JBLabel stepsHeader = new JBLabel("Plan Steps");
-        stepsHeader.setFont(stepsHeader.getFont().deriveFont(Font.BOLD, 12f));
-        stepsHeader.setAlignmentX(LEFT_ALIGNMENT);
-        top.add(stepsHeader);
-        top.add(Box.createVerticalStrut(4));
 
         panel.add(top, BorderLayout.NORTH);
-
-        // scrollable steps
-        stepsPanel = new JPanel();
-        stepsPanel.setOpaque(false);
-        stepsPanel.setLayout(new BoxLayout(stepsPanel, BoxLayout.Y_AXIS));
-        JBScrollPane scroll = new JBScrollPane(stepsPanel);
-        scroll.setBorder(JBUI.Borders.empty());
-        panel.add(scroll, BorderLayout.CENTER);
-
         return panel;
     }
 
@@ -160,93 +129,7 @@ public class PipelinePanel extends JBPanel<PipelinePanel> {
         } else {
             featureNameLabel.setText("No active feature — run /sdd-analyse to begin");
         }
-
         stageProgressPanel.setCurrentStage(state.getCurrentStage());
-
-        int total   = state.getTotalAcCount();
-        int checked = (int) state.getCheckedAcCount();
-        if (total > 0) {
-            acProgressBar.setMaximum(total);
-            acProgressBar.setValue(checked);
-            acProgressLabel.setText(checked + " / " + total + " ACs passing");
-        } else {
-            acProgressBar.setMaximum(1);
-            acProgressBar.setValue(0);
-            acProgressLabel.setText("—");
-        }
-
-        rebuildSteps(state);
-    }
-
-    private void rebuildSteps(SddState state) {
-        stepsPanel.removeAll();
-
-        if (state.getPlanSteps().isEmpty()) {
-            JBLabel hint = new JBLabel("No plan steps yet — run /sdd-plan to generate the plan");
-            hint.setForeground(PENDING_COLOR);
-            hint.setBorder(JBUI.Borders.empty(4, 0));
-            hint.setAlignmentX(LEFT_ALIGNMENT);
-            stepsPanel.add(hint);
-        } else {
-            for (PlanStep step : state.getPlanSteps()) {
-                stepsPanel.add(stepRow(step));
-            }
-        }
-        stepsPanel.add(Box.createVerticalGlue());
-        stepsPanel.revalidate();
-        stepsPanel.repaint();
-    }
-
-    private JPanel stepRow(PlanStep step) {
-        JPanel row = new JPanel(new BorderLayout(8, 0));
-        row.setOpaque(false);
-        row.setAlignmentX(LEFT_ALIGNMENT);
-        row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 26));
-        row.setBorder(JBUI.Borders.empty(2, 0));
-
-        StepStatus status = step.getStatus();
-        Color color = colorFor(status);
-        String icon = iconFor(status);
-
-        JBLabel iconLabel = new JBLabel(icon);
-        iconLabel.setForeground(color);
-        iconLabel.setPreferredSize(new Dimension(18, 18));
-
-        JBLabel title = new JBLabel(step.getNumber() + ".  " + step.getTitle());
-        if (status == StepStatus.IN_PROGRESS) {
-            title.setFont(title.getFont().deriveFont(Font.BOLD));
-            title.setForeground(ACTIVE_COLOR);
-        }
-
-        String statusText = switch (status) {
-            case DONE -> "Done";
-            case IN_PROGRESS -> "In Progress";
-            default -> "Pending";
-        };
-        JBLabel statusLabel = new JBLabel(statusText);
-        statusLabel.setForeground(color);
-        statusLabel.setPreferredSize(new Dimension(90, 18));
-
-        row.add(iconLabel, BorderLayout.WEST);
-        row.add(title, BorderLayout.CENTER);
-        row.add(statusLabel, BorderLayout.EAST);
-        return row;
-    }
-
-    private static Color colorFor(StepStatus status) {
-        return switch (status) {
-            case DONE -> DONE_COLOR;
-            case IN_PROGRESS -> ACTIVE_COLOR;
-            default -> PENDING_COLOR;
-        };
-    }
-
-    private static String iconFor(StepStatus status) {
-        return switch (status) {
-            case DONE -> "✓";
-            case IN_PROGRESS -> "▶";
-            default -> "○";
-        };
     }
 
     // ── Stage progress dots ───────────────────────────────────────────────────
@@ -254,13 +137,31 @@ public class PipelinePanel extends JBPanel<PipelinePanel> {
     private static class StageProgressPanel extends JPanel {
 
         private WorkflowStage currentStage = WorkflowStage.ANALYSE;
+        private final Consumer<WorkflowStage> clickListener;
 
-        StageProgressPanel() {
+        StageProgressPanel(Consumer<WorkflowStage> clickListener) {
+            this.clickListener = clickListener;
             setOpaque(false);
             Dimension d = new Dimension(400, 65);
             setMinimumSize(d);
             setPreferredSize(d);
             setMaximumSize(new Dimension(Integer.MAX_VALUE, 65));
+            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    int n = PIPELINE_STAGES.length;
+                    int seg = getWidth() / (n + 1);
+                    for (int i = 0; i < n; i++) {
+                        int dotX = seg * (i + 1);
+                        if (Math.abs(e.getX() - dotX) <= seg / 2) {
+                            clickListener.accept(PIPELINE_STAGES[i]);
+                            return;
+                        }
+                    }
+                }
+            });
         }
 
         void setCurrentStage(WorkflowStage stage) {

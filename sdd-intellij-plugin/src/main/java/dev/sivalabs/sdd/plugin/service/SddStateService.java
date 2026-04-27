@@ -124,11 +124,12 @@ public final class SddStateService {
 
         WorkflowStage stage = determineStage(hasFeature, hasPlan, hasImplSummary, hasReview);
 
-        FeatureSpec featureSpec   = hasFeature ? featureParser.parse(readFile(featureMd)) : null;
-        List<PlanStep> planSteps  = hasPlan    ? planParser.parse(readFile(planMd))       : Collections.emptyList();
-        ReviewReport reviewReport = hasReview  ? reviewParser.parse(readFile(reviewMd))   : null;
+        FeatureSpec featureSpec   = hasFeature     ? featureParser.parse(readFile(featureMd))  : null;
+        List<PlanStep> planSteps  = hasPlan        ? planParser.parse(readFile(planMd))        : Collections.emptyList();
+        String implSummary        = hasImplSummary ? readFile(implSummaryMd)                   : null;
+        ReviewReport reviewReport = hasReview      ? reviewParser.parse(readFile(reviewMd))    : null;
 
-        return new SddState(featureSpec, stage, planSteps, reviewReport, projectContext, archives);
+        return new SddState(featureSpec, stage, planSteps, reviewReport, projectContext, implSummary, archives);
     }
 
     // Stage is the first step whose output file does not yet exist.

@@ -38,6 +38,11 @@ public class SpecPanel extends JBPanel<SpecPanel> {
     // scrollable body (rebuilt on state change)
     private final JPanel body = new JPanel();
 
+    // toolbar buttons (visibility toggled by updateState)
+    private JButton generateBtn;
+    private JButton editRawBtn;
+    private JButton refineBtn;
+
     public SpecPanel(Project project, SddState state) {
         super(new BorderLayout());
         this.project = project;
@@ -50,12 +55,16 @@ public class SpecPanel extends JBPanel<SpecPanel> {
 
         JPanel toolbarLeft = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
         toolbarLeft.setOpaque(false);
-        JButton editRawBtn = new JButton("Edit Raw");
+        generateBtn = new JButton("Generate…");
+        generateBtn.setFocusable(false);
+        generateBtn.addActionListener(e -> openAnalyseDialog());
+        editRawBtn = new JButton("Edit Raw");
         editRawBtn.setFocusable(false);
         editRawBtn.addActionListener(e -> openRaw());
-        JButton refineBtn = new JButton("Refine…");
+        refineBtn = new JButton("Refine…");
         refineBtn.setFocusable(false);
         refineBtn.addActionListener(e -> openRefineDialog());
+        toolbarLeft.add(generateBtn);
         toolbarLeft.add(editRawBtn);
         toolbarLeft.add(refineBtn);
         toolbar.add(toolbarLeft, BorderLayout.WEST);
@@ -91,8 +100,13 @@ public class SpecPanel extends JBPanel<SpecPanel> {
 
     public void updateState(SddState state) {
         FeatureSpec spec = state.getFeatureSpec();
+        boolean hasSpec = spec != null && spec.getTitle() != null;
 
-        if (spec == null || spec.getTitle() == null) {
+        generateBtn.setVisible(!hasSpec);
+        editRawBtn.setVisible(hasSpec);
+        refineBtn.setVisible(hasSpec);
+
+        if (!hasSpec) {
             titleLabel.setText("No active feature");
             versionLabel.setText("");
             rebuildBody(null);
@@ -118,7 +132,7 @@ public class SpecPanel extends JBPanel<SpecPanel> {
 
         if (spec == null) {
             JBLabel hint = new JBLabel(
-                    "Run /sdd-init and /sdd-analyse to create a feature spec.");
+                    "No feature spec yet — click 'Generate…' to create one.");
             hint.setForeground(PENDING_COLOR);
             hint.setAlignmentX(LEFT_ALIGNMENT);
             body.add(hint);
@@ -345,6 +359,10 @@ public class SpecPanel extends JBPanel<SpecPanel> {
     private void openRefineDialog() {
         SddState state = SddStateService.getInstance(project).getState();
         new RefineDialog(project, state.getFeatureName()).show();
+    }
+
+    private void openAnalyseDialog() {
+        new AnalyseDialog(project).show();
     }
 
     // ── CollapsibleSection (inner class) ──────────────────────────────

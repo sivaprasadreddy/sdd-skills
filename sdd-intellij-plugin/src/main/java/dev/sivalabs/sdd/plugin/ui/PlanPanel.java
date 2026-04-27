@@ -14,6 +14,7 @@ import dev.sivalabs.sdd.plugin.model.*;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -52,14 +53,23 @@ public class PlanPanel extends JBPanel<PlanPanel> {
         stepsContainer.removeAll();
 
         if (state.getPlanSteps().isEmpty()) {
-            JBLabel msg = new JBLabel("No implementation plan found.");
+            JBLabel msg = new JBLabel("No implementation plan found");
             msg.setForeground(PENDING_COLOR);
             msg.setAlignmentX(LEFT_ALIGNMENT);
             stepsContainer.add(msg);
-            JBLabel hint = new JBLabel("Run /sdd-plan to generate the implementation plan.");
-            hint.setForeground(PENDING_COLOR);
-            hint.setAlignmentX(LEFT_ALIGNMENT);
-            stepsContainer.add(hint);
+            stepsContainer.add(Box.createVerticalStrut(8));
+
+            JButton generateBtn = new JButton("Generate Plan");
+            generateBtn.setAlignmentX(LEFT_ALIGNMENT);
+            generateBtn.addActionListener(e -> {
+                StringSelection sel = new StringSelection("/sdd-plan");
+                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(sel, sel);
+                generateBtn.setText("Copied!");
+                Timer timer = new Timer(2000, ev -> generateBtn.setText("Generate Plan"));
+                timer.setRepeats(false);
+                timer.start();
+            });
+            stepsContainer.add(generateBtn);
         } else {
             for (PlanStep step : state.getPlanSteps()) {
                 stepsContainer.add(buildStepPanel(step));
