@@ -22,6 +22,7 @@ argument-hint: <feature-name> (optional, derived from feature.md if omitted)
 Check the conversation for `feature_name` and for `feature.md` / `plan.md` in the project root.
 
 - If `feature.md` or `plan.md` do not exist → stop and tell the user both files are required.
+- Note whether `impl-summary.md` exists in the project root — it will be archived if present.
 - If `feature_name` is provided → use it as the archive directory name (kebab-case).
 - If `feature_name` is missing → read `feature.md` and derive it from the `# Feature:` heading,
   converting to kebab-case (e.g. "User Authentication" → `user-authentication`). Proceed automatically.
@@ -141,6 +142,8 @@ ARCHIVE_DIR="docs/specs-archive/$(date +"%Y%m%d%H%M")-<feature-name>"
 mkdir -p "$ARCHIVE_DIR"
 mv feature.md "$ARCHIVE_DIR/feature.md"
 mv plan.md "$ARCHIVE_DIR/plan.md"
+# move impl-summary.md only if it exists
+[ -f impl-summary.md ] && mv impl-summary.md "$ARCHIVE_DIR/impl-summary.md"
 ```
 
 ### 6. Create a Brief Summary
@@ -156,6 +159,6 @@ Implemented on: <date>
 
 ### 7. Confirm
 Report the final summary to the user:
-- Files archived to `docs/specs-archive/<yyyymmddHHMM>-<feature-name>/`
+- Files archived to `docs/specs-archive/<yyyymmddHHMM>-<feature-name>/` (`feature.md`, `plan.md`, and `impl-summary.md` if it existed)
 - Sections updated in `docs/project.md`
 - Remind them to commit both `docs/specs-archive/<yyyymmddHHMM>-<feature-name>/` and `docs/project.md` to version control

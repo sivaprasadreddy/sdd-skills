@@ -174,7 +174,9 @@ Report what was refactored (or "No refactoring needed" if the Green code was alr
 
 #### Proceed to Next AC
 
-Once Red → Green → Refactor is complete and all tests pass, announce:
+Once Red → Green → Refactor is complete and all tests pass:
+1. **Mark the corresponding step as done in `plan.md`** by changing `- [ ]` to `- [x]` on that step's line (or prepending `✅` if the plan does not use checkboxes).
+2. Announce:
 ```
 ✅ AC-<n> complete. Starting AC-<n+1>.
 ```
@@ -221,9 +223,9 @@ Do NOT declare the feature done if any AC is unchecked or any test is failing.
 
 ### 6. TDD Summary Report
 
-Produce the completion summary:
+Write a file named `impl-summary.md` in the project root with the following content:
 
-```
+```markdown
 ## TDD Implementation Complete
 
 ### TDD Cycle Summary
@@ -249,7 +251,9 @@ Any deviations from the plan, design decisions made during TDD, or
 emergent behaviour discovered through the tests.
 ```
 
-Then prompt the user to run `/sdd-review` before archiving.
+Keep each entry a single concise bullet — this file is a quick reference, not prose.
+
+After writing the file, tell the user: "`impl-summary.md` created." Then prompt them to run `/sdd-review` before archiving.
 
 ---
 

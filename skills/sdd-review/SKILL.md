@@ -67,6 +67,7 @@ If `feature.md` is present, go through every AC:
 - Confirm there is a test that directly covers it
 - Confirm the implementation actually satisfies it (not just that a test exists)
 - Flag any AC with no test coverage as 🔴 CRITICAL
+- **For each AC that is fully covered and satisfied, mark it as complete in `feature.md`** by changing `- [ ]` to `- [x]` on that AC's line
 
 ---
 

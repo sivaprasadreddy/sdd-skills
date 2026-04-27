@@ -267,14 +267,15 @@ AI Agent runs analyse → plan → implement → review → archive automaticall
 2. Reads existing similar files in the codebase to understand conventions before creating new ones
 3. Executes each step in `plan.md` in order, announcing each step as it starts
 4. Runs verification after each layer: compiles after adding new classes, runs tests after writing them, and checks migrations apply cleanly
-5. Fixes any compile errors or test failures before moving to the next step — never carries failures forward
-6. Does not introduce new dependencies without flagging them to you first
-7. After all steps, runs the full test suite and checks every AC from `feature.md` against a passing test
-8. Produces a completion summary listing files created/modified and the pass/fail status of each AC
-9. Prompts you to run `/sdd-review` next
+5. Fixes any compiler errors or test failures before moving to the next step — never carries failures forward
+6. **Marks each step as complete in `plan.md`** (`- [ ]` → `- [x]`) as soon as it is verified
+7. Does not introduce new dependencies without flagging them to you first
+8. After all steps, runs the full test suite and checks every AC from `feature.md` against a passing test
+9. Writes `impl-summary.md` with concise bullet-point entries for files created/modified, AC pass/fail status, and any notable deviations
+10. Prompts you to run `/sdd-review` next
 
 **Input:** None (reads `plan.md` automatically)
-**Output:** Implemented feature code with passing tests
+**Output:** Implemented feature code with passing tests; `impl-summary.md` in project root
 **Requires:** `plan.md`, `feature.md`, `docs/project.md`
 
 ---
@@ -293,7 +294,8 @@ AI Agent runs analyse → plan → implement → review → archive automaticall
 **What it does:**
 1. Reads `docs/project.md`, `feature.md`, and `plan.md` to understand intent and conventions
 2. Determines scope: if no argument given, runs `git diff main...HEAD --name-only` and focuses the review on changed files only (not the entire codebase)
-3. Reviews across 8 dimensions, with every finding citing the exact file and line range:
+3. For each AC that is fully covered and satisfied, **marks it as complete in `feature.md`** (`- [ ]` → `- [x]`); flags any uncovered AC as 🔴 Critical
+4. Reviews across 8 dimensions, with every finding citing the exact file and line range:
 
    | Dimension                   | What's checked                                                                                                                                 |
    |-----------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -308,12 +310,12 @@ AI Agent runs analyse → plan → implement → review → archive automaticall
    | **Test quality**            | AAA structure, descriptive names, no logic in tests, correct mock boundaries, no `Thread.sleep()`                                              |
    | **Observability**           | Log levels, no sensitive data in logs, Micrometer instrumentation                                                                              |
 
-4. Assigns severity to every finding: 🔴 Critical / 🟠 Major / 🟡 Minor / 🔵 Info
-5. Produces a structured report with an AC coverage table and an explicit merge verdict
-6. Offers to fix Critical and Major findings immediately if you ask
+5. Assigns severity to every finding: 🔴 Critical / 🟠 Major / 🟡 Minor / 🔵 Info
+6. Produces a structured report with an AC coverage table and an explicit merge verdict
+7. Offers to fix Critical and Major findings immediately if you ask
 
 **Input:** Optional path argument (defaults to git diff scope)
-**Output:** Structured review report with merge verdict
+**Output:** `review.md` with merge verdict; `feature.md` updated with verified AC checkboxes ticked
 **Requires:** `docs/project.md` (feature.md and plan.md used if present)
 
 **Review verdict levels:**
@@ -329,7 +331,7 @@ AI Agent runs analyse → plan → implement → review → archive automaticall
 
 ### `/sdd-archive` — Archive
 
-**Purpose:** Moves `feature.md` and `plan.md` into a permanent `docs/specs-archive/<feature-name>/` directory once the feature is complete and reviewed, keeping the project root clean.
+**Purpose:** Moves `feature.md`, `plan.md`, and `impl-summary.md` into a permanent `docs/specs-archive/<feature-name>/` directory once the feature is complete and reviewed, keeping the project root clean.
 
 **Usage:**
 ```
@@ -342,12 +344,12 @@ AI Agent runs analyse → plan → implement → review → archive automaticall
 2. Checks that all AC checkboxes in `feature.md` are ticked — warns you and asks for confirmation if any are unchecked
 3. Updates `docs/project.md` with: the new feature entry, any architectural decisions made, new API endpoints, and new environment/configuration keys introduced by the feature
 4. Shows a summary of every proposed change to `project.md` and asks for your confirmation before writing
-5. Moves `feature.md` and `plan.md` into `docs/specs-archive/<feature-name>/`
+5. Moves `feature.md`, `plan.md`, and `impl-summary.md` (if present) into `docs/specs-archive/<feature-name>/`
 6. Creates `docs/specs-archive/<feature-name>/README.md` with a brief summary of what was built, key files, and notable decisions
 7. Reminds you to commit the `docs/specs-archive/<feature-name>/` directory and `docs/project.md` to version control
 
 **Input:** Optional feature name argument
-**Output:** `docs/specs-archive/<feature-name>/feature.md`, `docs/specs-archive/<feature-name>/plan.md`, `docs/specs-archive/<feature-name>/README.md`
+**Output:** `docs/specs-archive/<feature-name>/feature.md`, `plan.md`, `impl-summary.md` (if present), `README.md`
 **Requires:** `feature.md`, `plan.md` in project root
 
 ---
@@ -388,6 +390,7 @@ your-project/
 │       └── jwt-authentication/     ← archived after /sdd-archive
 │           ├── feature.md
 │           ├── plan.md
+│           ├── impl-summary.md     ← present if /sdd-implement was used
 │           └── README.md
 ├── .claude/
 │   └── skills/
@@ -432,7 +435,7 @@ This project uses Spec Driven Development. The workflow is:
 4. `/sdd-plan` → reads `feature.md`, produces `plan.md`
 5. `/sdd-implement` → reads `plan.md`, implements and verifies
 6. `/sdd-review` → reviews code quality, security, and AC coverage
-7. `/sdd-archive` → archives `feature.md` + `plan.md` to `docs/specs-archive/<feature-name>/`
+7. `/sdd-archive` → archives `feature.md`, `plan.md`, and `impl-summary.md` to `docs/specs-archive/<feature-name>/`
 
 Never skip steps. Always read `docs/project.md` before planning or implementing.
 ```
