@@ -165,7 +165,7 @@ If `feature.md` is present, go through every AC:
 
 ## Output Format
 
-Produce the review as follows:
+Write the review to `review.md` in the project root using this structure:
 
 ```markdown
 # Code Review: <Feature Name or Path>
@@ -199,6 +199,9 @@ Produce the review as follows:
 - [ ] 🟠 Requires fixes and re-review
 - [ ] 🔴 Do not merge — significant issues found
 ```
+
+After writing the file, print a one-line confirmation: `review.md written.`
+Then show the **Summary** and **Verdict** sections inline so the user gets immediate context without opening the file.
 
 ---
 
