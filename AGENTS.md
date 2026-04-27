@@ -16,15 +16,15 @@ The skills live in `skills/<skill-name>/SKILL.md`. Each SKILL.md is a markdown p
                                  repeatable)
 ```
 
-| Skill            | Reads                                      | Produces                     |
-|------------------|--------------------------------------------|------------------------------|
-| `/sdd-init`      | Project codebase                           | `docs/project.md`            |
-| `/sdd-analyse`   | `docs/project.md`                          | `feature.md`                 |
-| `/sdd-refine`    | `feature.md`, `docs/project.md`, `plan.md` | Updated `feature.md`         |
-| `/sdd-plan`      | `feature.md`, `docs/project.md`            | `plan.md`                    |
-| `/sdd-implement` | `plan.md`, `feature.md`, `docs/project.md` | Implemented code             |
-| `/sdd-review`    | `docs/project.md`, `feature.md`, `plan.md` | Review report                |
-| `/sdd-archive`   | `feature.md`, `plan.md`                    | `docs/specs-archive/<name>/` |
+| Skill            | Reads                                      | Produces                            |
+|------------------|--------------------------------------------|-------------------------------------|
+| `/sdd-init`      | Project codebase                           | `docs/project.md`                   |
+| `/sdd-analyse`   | `docs/project.md`                          | `feature.md`                        |
+| `/sdd-refine`    | `feature.md`, `docs/project.md`, `plan.md` | Updated `feature.md`                |
+| `/sdd-plan`      | `feature.md`, `docs/project.md`            | `plan.md`                           |
+| `/sdd-implement` | `plan.md`, `feature.md`, `docs/project.md` | Implemented code, `impl-summary.md` |
+| `/sdd-review`    | `docs/project.md`, `feature.md`, `plan.md` | `review.md`, updated `feature.md`   |
+| `/sdd-archive`   | `feature.md`, `plan.md`, `impl-summary.md` | `docs/specs-archive/<name>/`        |
 
 ## Key Files and Their Roles
 
@@ -45,7 +45,7 @@ argument-hint: <argument description>  # omit if skill takes no arguments
 ---
 ```
 
-The body is a markdown prompt. Use `$ARGUMENTS` anywhere the user's argument should be interpolated.
+The body is a markdown prompt.
 
 ## Installation
 
@@ -72,5 +72,6 @@ After `/sdd-archive`, the consuming project will have:
 docs/specs-archive/<feature-name>/
 ├── feature.md
 ├── plan.md
+├── impl-summary.md   ← present if /sdd-implement or /sdd-tdd-implement was used
 └── README.md
 ```

@@ -22,9 +22,9 @@ Read `feature.md` and `docs/project.md` in full.
 
 ### 2. Identify the Tech Stack
 From `docs/project.md`, note:
-- Primary language and framework (e.g., Java 25 + Spring Boot 4.x)
-- Build tool (Maven or Gradle)
-- Database and ORM
+- Primary language and framework
+- Build tool and compile/test commands
+- Database and data access layer
 - Messaging systems
 - Testing frameworks
 - Any architecture patterns (e.g., Hexagonal, DDD, Layered)
@@ -47,35 +47,35 @@ Brief description of the implementation approach.
 
 ### Step 1: <Database/Schema Changes>
 - [ ] Create/alter table: `...`
-- [ ] Add migration: `src/main/resources/db/migration/V<n>__<description>.sql`
+- [ ] Add migration file: `...`
 - Files to create/modify: ...
 
 ### Step 2: <Domain Layer>
-- [ ] Create entity: `...`
+- [ ] Create entity / model: `...`
 - [ ] Create value objects: `...`
-- [ ] Define repository interface: `...`
+- [ ] Define repository / data access interface: `...`
 - Files: ...
 
 ### Step 3: <Application/Service Layer>
 - [ ] Create use case / service: `...`
-- [ ] Define DTOs / command objects: `...`
+- [ ] Define request/response objects / command objects: `...`
 - Files: ...
 
 ### Step 4: <Infrastructure/Adapter Layer>
-- [ ] Implement repository: `...`
+- [ ] Implement repository / data access: `...`
 - [ ] External integrations: `...`
 - Files: ...
 
 ### Step 5: <API / Presentation Layer>
-- [ ] REST controller: `...`
+- [ ] Controller / handler / route: `...`
 - [ ] Request/response models: `...`
-- [ ] OpenAPI annotations: `...`
+- [ ] API documentation annotations: `...`
 - Files: ...
 
 ### Step 6: <Tests>
 - [ ] Unit tests: `...`
-- [ ] Integration tests (Testcontainers): `...`
-- [ ] API tests: `...`
+- [ ] Integration tests: `...`
+- [ ] API / end-to-end tests: `...`
 - Files: ...
 
 ## Acceptance Criteria Mapping

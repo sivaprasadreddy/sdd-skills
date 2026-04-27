@@ -39,9 +39,9 @@ From `feature.md`, extract the full acceptance criteria list. This is your TDD b
 every AC must be driven by a failing test before any production code for it is written.
 
 From `docs/project.md`, note:
-- Testing libraries in use (JUnit 5, Mockito, Testcontainers, RestAssured, etc.)
+- Testing libraries and frameworks in use
 - Architecture pattern — this determines what kind of tests to write at each layer
-- Package naming and REST base path conventions
+- Package/module naming and API base path conventions
 
 ---
 
@@ -50,23 +50,19 @@ From `docs/project.md`, note:
 Before the TDD cycle begins, set up structural scaffolding that does not contain behaviour.
 These items do not require a failing test first because they contain no logic to test:
 
-- Database migration files (`V<n>__<description>.sql`)
-- JPA entity classes (fields, annotations, no business logic)
-- Repository interfaces (Spring Data method signatures only)
-- DTO / record definitions
-- Package structure and empty class shells
+- Database migration files
+- Data model / entity class definitions (fields and annotations, no business logic)
+- Repository / data access interface stubs
+- Request/response model definitions
+- Module/package structure and empty class/file shells
 
-Create these first, then run:
-```
-mvn compile   (or ./gradlew compileJava)
-```
+Create these first, then compile using the project's build command from `docs/project.md`.
 
 Fix any compile errors before proceeding. Do not move to the TDD cycle until the project compiles cleanly.
 
 Announce when scaffolding is complete:
 ```
-✅ Scaffolding complete — project compiles cleanly.
-Starting TDD cycle for AC-01.
+✅ Scaffolding complete — project compiles cleanly. Starting TDD cycle for AC-01.
 ```
 
 ---
@@ -90,23 +86,20 @@ Rules for the Red phase:
 - Write **one test** that directly asserts the behaviour described in the AC.
 - The test must fail for the **right reason** — because the production behaviour does not exist yet,
   not because of a compile error or missing import.
-- Choose the correct test type for the layer being tested:
+- Choose the correct test type for the layer being tested (use the testing libraries from `docs/project.md`):
 
-  | Layer                   | Test type                                        | Annotations / tools                          |
-  |-------------------------|--------------------------------------------------|----------------------------------------------|
-  | Domain / service logic  | Unit test — pure Java, no Spring context         | `@ExtendWith(MockitoExtension.class)`        |
-  | Repository queries      | Slice test                                       | `@DataJpaTest` + Testcontainers              |
-  | REST controller         | Slice test                                       | `@WebMvcTest` + `MockMvc`                    |
-  | Full request → DB flow  | Integration test                                 | `@SpringBootTest` + RestAssured + Testcontainers |
+  | Layer                   | Test type                                                        |
+  |-------------------------|------------------------------------------------------------------|
+  | Domain / business logic | Unit test — no framework context, all dependencies mocked        |
+  | Data access / repository| Data-access slice test — hits a real or in-memory database       |
+  | HTTP controller/handler | Controller slice test — HTTP layer only, services mocked         |
+  | Full request → DB flow  | Integration / end-to-end test — full stack with real infrastructure |
 
 - Name the test method to describe the scenario:
   `should_<expectedOutcome>_when_<condition>` (e.g., `should_throwException_when_emailAlreadyExists`)
 - Do not write any production code during this phase.
 
-Run the test and confirm it fails:
-```
-mvn test -Dtest=<TestClass#methodName>   (or ./gradlew test --tests "<TestClass.methodName>")
-```
+Run the test and confirm it fails using the project's test command from `docs/project.md`.
 
 Show the failure output. If it passes without production code, the test is wrong — fix it before proceeding.
 
@@ -127,15 +120,7 @@ Rules for the Green phase:
   but keep each method minimal.
 - Do not write new tests during this phase.
 
-Run the test again and confirm it passes:
-```
-mvn test -Dtest=<TestClass#methodName>
-```
-
-Then run the full test suite to confirm nothing regressed:
-```
-mvn test   (or ./gradlew test)
-```
+Run the single test again and confirm it passes. Then run the full test suite to confirm nothing regressed.
 
 If any previously passing test now fails, fix the regression before proceeding. Do not carry failures forward.
 
@@ -152,21 +137,18 @@ With all tests passing, now improve the code:
 
 **In production code, look for:**
 - Duplication that can be extracted to a private method or shared utility
-- Magic literals that should be named constants or `@ConfigurationProperties`
+- Magic literals that should be named constants or centralised configuration
 - Method or class names that do not clearly express intent
 - Violation of the architecture conventions in `docs/project.md` (e.g., business logic in a controller)
-- Missing Javadoc on new public API methods
+- Missing documentation on new public API methods
 - Overly complex conditionals that can be simplified
 
 **In test code, look for:**
-- Duplicated setup that belongs in `@BeforeEach`
+- Duplicated setup that belongs in a shared setup/fixture method
 - Test data builders or factory methods that could reduce boilerplate across tests
 - Assertion messages that would be clearer on failure
 
-After refactoring, run the full test suite again to confirm all tests still pass:
-```
-mvn test   (or ./gradlew test)
-```
+After refactoring, run the full test suite again to confirm all tests still pass.
 
 Report what was refactored (or "No refactoring needed" if the Green code was already clean).
 
@@ -174,7 +156,9 @@ Report what was refactored (or "No refactoring needed" if the Green code was alr
 
 #### Proceed to Next AC
 
-Once Red → Green → Refactor is complete and all tests pass, announce:
+Once Red → Green → Refactor is complete and all tests pass:
+1. **Mark the corresponding step as done in `plan.md`** by changing `- [ ]` to `- [x]` on that step's line (or prepending `✅` if the plan does not use checkboxes).
+2. Announce:
 ```
 ✅ AC-<n> complete. Starting AC-<n+1>.
 ```
@@ -187,17 +171,18 @@ Repeat the cycle for every remaining AC.
 
 After every AC has a passing test and the code is refactored, address concerns that span multiple ACs:
 
-- **Input validation**: Add Bean Validation annotations (`@Valid`, `@NotNull`, `@Size`, etc.) to request DTOs.
+- **Input validation**: Add input validation to request models/DTOs using the project's validation mechanism.
   Write a test per validation rule.
-- **Error handling**: Confirm the `GlobalExceptionHandler` (or equivalent) maps domain exceptions
-  to the correct HTTP status codes. Write tests for each error path.
-- **Security**: Confirm that endpoints requiring authentication are protected. If using Spring Security,
-  test with `@WithMockUser` or equivalent.
+- **Error handling**: Confirm the centralised error handler maps domain exceptions to the correct HTTP status
+  codes. Write tests for each error path.
+- **Security**: Confirm that endpoints requiring authentication are protected and tested with appropriate
+  authenticated/unauthenticated test cases.
 - **Logging**: Add log statements at appropriate levels (`INFO` for business events, `WARN`/`ERROR` for failures).
   Logging does not require a failing test — add after Green.
-- **OpenAPI annotations**: Add `@Operation`, `@ApiResponse` etc. to controller methods if the project uses Springdoc.
+- **API documentation**: Add API documentation annotations to controller/handler methods if the project uses
+  an API documentation library.
 
-Run the full test suite after adding each concern.
+Run the full test suite after each concern is added.
 
 ---
 
@@ -210,10 +195,7 @@ For each AC in `feature.md`:
 - Run that test in isolation to confirm it still passes
 - Check the AC checkbox in `feature.md`: change `- [ ]` to `- [x]`
 
-Run the complete test suite one final time:
-```
-mvn test   (or ./gradlew test)
-```
+Run the complete test suite one final time using the project's test command.
 
 Do NOT declare the feature done if any AC is unchecked or any test is failing.
 
@@ -221,9 +203,9 @@ Do NOT declare the feature done if any AC is unchecked or any test is failing.
 
 ### 6. TDD Summary Report
 
-Produce the completion summary:
+Write a file named `impl-summary.md` in the project root with the following content:
 
-```
+```markdown
 ## TDD Implementation Complete
 
 ### TDD Cycle Summary
@@ -233,11 +215,11 @@ Produce the completion summary:
 | AC-02 | FooControllerTest#should_..._when_...      |  ✓    |   ✓     |     ✓      |
 
 ### Files Created
-- `src/main/java/...` — description
-- `src/test/java/...` — description
+- `src/.../...` — description
+- `src/.../...` (test) — description
 
 ### Files Modified
-- `src/main/java/...` — description
+- `src/.../...` — description
 
 ### Test Suite
 - Total tests: N
@@ -249,7 +231,9 @@ Any deviations from the plan, design decisions made during TDD, or
 emergent behaviour discovered through the tests.
 ```
 
-Then prompt the user to run `/sdd-review` before archiving.
+Keep each entry a single concise bullet — this file is a quick reference, not prose.
+
+After writing the file, tell the user: "`impl-summary.md` created." Then prompt them to run `/sdd-review` before archiving.
 
 ---
 

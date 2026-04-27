@@ -57,7 +57,7 @@ Explore the source tree structure:
   - Packages named after business modules (e.g., `order`, `payment`, `user`) each containing layers → Modular Monolith
   - Multiple top-level services each with their own build file → Microservices
 - Identify the base package name (e.g., `com.example.myapp`)
-- Look for a `GlobalExceptionHandler`, `@RestControllerAdvice`, or equivalent error handler
+- Look for a centralised error handler (e.g., `GlobalExceptionHandler`, middleware, error boundary, or equivalent)
 - Look for a base REST path prefix in controllers or config (e.g., `/api/v1`)
 - Note any security config (e.g., `SecurityConfig`, auth annotations, JWT setup)
 
@@ -114,7 +114,7 @@ Create `docs/` if it does not exist. Write `docs/project.md` with this structure
 ## Conventions
 - Package naming: <convention>
 - REST base path: <base path, e.g. /api/v1>
-- Error handling: <mechanism, e.g. GlobalExceptionHandler via @RestControllerAdvice>
+- Error handling: <mechanism, e.g. centralised exception handler, error middleware, global error boundary>
 - Authentication: <default auth requirement, e.g. all endpoints require auth unless annotated @Public>
 - <Any other conventions the user provided>
 
