@@ -59,8 +59,19 @@ public class ReviewPanel extends JBPanel<ReviewPanel> {
         JButton openReportBtn = new JButton("Open Report");
         openReportBtn.setFocusable(false);
         openReportBtn.addActionListener(e -> openReviewMd());
+        JButton archiveBtn = new JButton("Archive");
+        archiveBtn.setFocusable(false);
+        archiveBtn.addActionListener(e -> {
+            StringSelection sel = new StringSelection("/sdd-archive");
+            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(sel, sel);
+            archiveBtn.setText("Copied!");
+            Timer timer = new Timer(2000, ev -> archiveBtn.setText("Archive"));
+            timer.setRepeats(false);
+            timer.start();
+        });
         buttons.add(runBtn);
         buttons.add(openReportBtn);
+        buttons.add(archiveBtn);
         toolbar.add(buttons, BorderLayout.EAST);
 
         // ── verdict + last-run rows ──────────────────────────────────
